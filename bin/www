@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+var app     = require('../app')
+  , port    = process.env.PORT || 3000;
+
+app.listen(port, function(err) {
+  if (err) {
+    console.log('App failed to start');
+  } else {
+    console.log('App is running at: ', port);
+  }
+});

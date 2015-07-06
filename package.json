@@ -4,7 +4,7 @@
   "description": "Simple and flexible job scheduling for your application",
   "main": "app.js",
   "scripts": {
-    "test": "gulp lint test"
+    "test": "NODE_ENV=test gulp lint test"
   },
   "dependencies": {
     "bluebird": "^2.9.32",

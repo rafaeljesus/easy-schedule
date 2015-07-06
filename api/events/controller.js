@@ -8,7 +8,6 @@ module.exports = {
     Event
       .find(req.username)
       .then(function(events) {
-        console.log('controller ', events);
         res.json(200, events);
       })
       .catch(function(err) {

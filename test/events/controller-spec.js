@@ -46,20 +46,67 @@ describe('EventsControllerSpec', function() {
         });
     });
 
-    xit('should respond 401', function(done) {
+    it('should respond 401', function(done) {
       request
-        .get();
+        .get('/events')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(401, function(err, res) {
+          expect(res.body.message).to.equal('Unauthorized');
+          done();
+        });
     });
-
   });
 
   describe('GET /events/:id', function() {
 
+    var key = 'user-hash';
+    var event = {
+      id: '1231231209838997678236',
+      url: 'https://example.com',
+      type: 'Recurring',
+      cron: '* * * * ?'
+    };
+
     beforeEach(function(done) {
-      done();
+      Event
+        .schedule(key, event)
+        .then(function(res) {
+          expect(res).to.be.ok;
+          done();
+        })
+        .catch(function(err) {
+          done(err);
+        });
     });
 
-    it('should find a event by id', function() {
+    afterEach(function(done) {
+      Event.delete(key).then(function() {
+        done();
+      });
+    });
+
+    it('should find a event by id', function(done) {
+      request
+        .get('/events/' + event.id)
+        .auth('user-hash', 'user-pass')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200, function(err, res) {
+          expect(res.body).to.eql(event);
+          done();
+        });
+    });
+
+    it('should respond 401', function(done) {
+      request
+        .get('/events/' + event.id)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(401, function(err, res) {
+          expect(res.body.message).to.equal('Unauthorized');
+          done();
+        });
     });
   });
 

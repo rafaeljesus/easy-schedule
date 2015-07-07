@@ -1,14 +1,11 @@
 'use strict';
 
-var assert    = require('assert')
-  , BPromise  = require('bluebird')
+var BPromise  = require('bluebird')
   , redis     = require('../../lib/redis');
 
 module.exports = {
 
   find: BPromise.method(function(key) {
-    assert(!!key, 'Key is mandatory');
-
     return redis
       .hgetall('events-' + key)
       .then(function(res) {
@@ -16,9 +13,15 @@ module.exports = {
       });
   }),
 
-  schedule: BPromise.method(function(key, event) {
-    assert(!!key, 'Key is mandatory');
+  get: BPromise.method(function(key, id) {
+    return redis
+      .hgetall('events-' + key)
+      .then(function(res) {
+        if (res.id === id) return res;
+      });
+  }),
 
+  schedule: BPromise.method(function(key, event) {
     return redis
       .hmset('events-' + key, event)
       .then(function(res) {

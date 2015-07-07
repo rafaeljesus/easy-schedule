@@ -1,14 +1,20 @@
 'use strict';
 
-var restify     = require('restify')
-  , app         = restify.createServer();
+var express       = require('express')
+  , logger        = require('morgan')
+  , bodyParser    = require('body-parser')
+  , cors          = require('cors')
+  , auth          = require('./middlewares/basic-auth')
+  , app           = express();
 
-app.use(restify.bodyParser());
-app.use(restify.queryParser());
-app.use(restify.authorizationParser());
-app.use(restify.CORS());
+app.use(logger('combined'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use('*', cors());
 
-require('./api/home/routes')(app);
-require('./api/events/routes')(app);
+app.use('/', require('./api/home/routes'));
+app.use('/events', auth, require('./api/events/routes'));
+
+app.disable('x-powered-by');
 
 module.exports = app;

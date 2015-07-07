@@ -1,7 +1,10 @@
 'use strict';
 
-var controller = require('./controller');
+var express     = require('express')
+  , router      = express.Router()
+  , controller  = require('./controller');
 
-module.exports = function(app) {
-  app.get('/events', controller.index);
-};
+router.get('/', controller.index);
+router.get('/:id', controller.show);
+
+module.exports = router;

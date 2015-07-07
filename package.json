@@ -7,13 +7,17 @@
     "test": "NODE_ENV=test gulp lint test"
   },
   "dependencies": {
+    "basic-auth": "^1.0.3",
     "bluebird": "^2.9.32",
+    "body-parser": "^1.13.2",
+    "cors": "^2.7.1",
+    "express": "^4.13.1",
     "hiredis": "^0.4.0",
     "moment": "2.10.3",
+    "morgan": "^1.6.1",
     "node-schedule": "^0.2.9",
     "promise-redis": "0.0.1",
-    "redis": "^0.12.1",
-    "restify": "^3.0.3"
+    "redis": "^0.12.1"
   },
   "devDependencies": {
     "chai": "2.2.0",

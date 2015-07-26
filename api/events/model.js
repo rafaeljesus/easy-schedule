@@ -1,40 +1,23 @@
 'use strict';
 
-var BPromise  = require('bluebird')
-  , redis     = require('../../lib/redis');
+const redis = require('../../lib/redis');
 
-module.exports = {
+exports.find = function(key) {
+  return redis.hgetall('events-' + key);
+};
 
-  find: BPromise.method(function(key) {
-    return redis
-      .hgetall('events-' + key)
-      .then(function(res) {
-        return res;
-      });
-  }),
+exports.get = function(key, id) {
+  return redis
+    .hgetall('events-' + key)
+    .then(function(res) {
+      if (res.id === id) return res;
+    });
+};
 
-  get: BPromise.method(function(key, id) {
-    return redis
-      .hgetall('events-' + key)
-      .then(function(res) {
-        if (res.id === id) return res;
-      });
-  }),
+exports.schedule = function(key, event) {
+  return redis.hmset('events-' + key, event);
+};
 
-  schedule: BPromise.method(function(key, event) {
-    return redis
-      .hmset('events-' + key, event)
-      .then(function(res) {
-        return res;
-      });
-  }),
-
-  delete: BPromise.method(function(key) {
-    return redis
-      .del('events-' + key)
-      .then(function(res) {
-        return res;
-      });
-  })
-
+exports.delete = function(key) {
+  return redis.del('events-' + key);
 };

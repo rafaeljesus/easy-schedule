@@ -1,20 +1,14 @@
 'use strict';
 
-var express       = require('express')
-  , logger        = require('morgan')
-  , bodyParser    = require('body-parser')
-  , cors          = require('cors')
-  , auth          = require('./middlewares/basic-auth')
-  , app           = express();
+const koa       = require('koa')
+  , mount       = require('koa-mount')
+  , auth        = require('./middlewares/auth')
+  , app         = koa()
+  , APIhome     = require('./api/home/routes')
+  , APIevents   = require('./api/events/routes');
 
-app.use(logger('combined'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use('*', cors());
-
-app.use('/', require('./api/home/routes'));
-app.use('/events', auth, require('./api/events/routes'));
-
-app.disable('x-powered-by');
+app.use(auth());
+app.use(mount('/v1', APIhome.middleware()));
+app.use(mount('/v1/events', APIevents.middleware()));
 
 module.exports = app;

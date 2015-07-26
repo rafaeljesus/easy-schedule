@@ -1,7 +1,7 @@
 'use strict';
 
-var gulp      = require('gulp')
-  , plugins   = require('gulp-load-plugins')();
+const gulp      = require('gulp')
+  , plugins     = require('gulp-load-plugins')();
 
 gulp.task('lint', function() {
   return gulp.src(['./api/**/*.js', './test/**/*spec.js', 'gulpfile.js', 'api.js'])
@@ -26,3 +26,5 @@ gulp.task('test', function() {
         });
     });
 });
+
+gulp.task('default', ['lint', 'test']);

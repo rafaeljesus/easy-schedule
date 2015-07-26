@@ -1,7 +1,6 @@
 'use strict';
 
-var express     = require('express')
-  , router      = express.Router()
+const router    = require('koa-router')()
   , controller  = require('./controller');
 
 router.get('/', controller.index);

@@ -1,31 +1,14 @@
 'use strict';
 
-var Event = require('./model');
+const Event = require('./model');
 
-module.exports = {
+exports.index = function *(next) {
+  let key = this.user.name;
+  this.body = yield Event.find(key);
+};
 
-  index: function(req, res) {
-    var key = req.user.name;
-    Event
-      .find(key)
-      .then(function(events) {
-        res.status(200).json(events);
-      })
-      .catch(function(err) {
-        res.status(500).json(err);
-      });
-  },
-
-  show: function(req, res) {
-    var key = req.user.name;
-    var id = req.params.id;
-    Event
-      .get(key, id)
-      .then(function(event) {
-        res.status(200).json(event);
-      })
-      .catch(function(err) {
-        res.status(500).json(err);
-      });
-  }
+exports.show = function *(next) {
+  let key = this.user.name
+    , id = this.params.id;
+  this.body = yield Event.get(key, id);
 };

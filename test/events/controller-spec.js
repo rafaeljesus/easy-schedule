@@ -1,42 +1,43 @@
 'use strict';
 
-var app       = require('../../app')
-  , expect    = require('chai').expect
-  , Event     = require('../../api/events/model')
-  , request   = require('supertest')(app);
+const supertest = require('supertest')
+  , expect      = require('chai').expect
+  , app         = require('../../app')
+  , request     = supertest(app.listen())
+  , Event       = require('../../api/events/model');
 
 describe('EventsControllerSpec', function() {
 
-  describe('GET /events', function() {
+  describe('GET /v1/events', function() {
 
-    var key = 'user-hash';
-    var event = {
+    let key = 'user-hash';
+    let event = {
       url: 'https://example.com',
       type: 'Recurring',
       cron: '* * * * ?'
     };
 
     beforeEach(function(done) {
-      Event
-        .schedule(key, event)
-        .then(function(res) {
-          expect(res).to.be.ok;
+      Event.schedule(key, event)
+        .then(function() {
           done();
-        })
-        .catch(function(err) {
+        }).catch(function(err) {
           done(err);
         });
     });
 
     afterEach(function(done) {
-      Event.delete(key).then(function() {
-        done();
-      });
+      Event.delete(key)
+        .then(function() {
+          done();
+        }).catch(function(err) {
+          done(err);
+        });
     });
 
     it('should find all events', function(done) {
       request
-        .get('/events')
+        .get('/v1/events')
         .auth('user-hash', 'user-pass')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
@@ -52,7 +53,7 @@ describe('EventsControllerSpec', function() {
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(401, function(err, res) {
-          expect(res.body.message).to.equal('Unauthorized');
+          expect(res.body.error).to.equal('unauthorized');
           done();
         });
     });
@@ -60,8 +61,8 @@ describe('EventsControllerSpec', function() {
 
   describe('GET /events/:id', function() {
 
-    var key = 'user-hash';
-    var event = {
+    let key = 'user-hash';
+    let event = {
       id: '1231231209838997678236',
       url: 'https://example.com',
       type: 'Recurring',
@@ -69,13 +70,11 @@ describe('EventsControllerSpec', function() {
     };
 
     beforeEach(function(done) {
-      Event
-        .schedule(key, event)
+      Event.schedule(key, event)
         .then(function(res) {
           expect(res).to.be.ok;
           done();
-        })
-        .catch(function(err) {
+        }).catch(function(err) {
           done(err);
         });
     });
@@ -88,23 +87,12 @@ describe('EventsControllerSpec', function() {
 
     it('should find a event by id', function(done) {
       request
-        .get('/events/' + event.id)
+        .get('/v1/events/' + event.id)
         .auth('user-hash', 'user-pass')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
           expect(res.body).to.eql(event);
-          done();
-        });
-    });
-
-    it('should respond 401', function(done) {
-      request
-        .get('/events/' + event.id)
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(401, function(err, res) {
-          expect(res.body.message).to.equal('Unauthorized');
           done();
         });
     });

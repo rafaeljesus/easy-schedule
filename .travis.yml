@@ -12,4 +12,5 @@ before_script:
 script:
   - npm test
 after_script:
-  - codeclimate-test-reporter < lcov.info
+  # - codeclimate-test-reporter < lcov.info
+  - codeclimate < ./coverage/lcov.info

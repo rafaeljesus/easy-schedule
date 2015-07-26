@@ -3,14 +3,16 @@ node_js:
   - 'iojs-v2.4.0'
 services:
   - redis-server
-addons:
-  code_climate:
-    repo_token: 0af717d08c45d155b504c197597bc7716bfc0d50f82548fafbcc2b43c1e6c97d
+env:
+  CODECLIMATE_REPO_TOKEN=0af717d08c45d155b504c197597bc7716bfc0d50f82548fafbcc2b43c1e6c97d
+# addons:
+#   code_climate:
+#     repo_token: 0af717d08c45d155b504c197597bc7716bfc0d50f82548fafbcc2b43c1e6c97d
 before_script:
   - export PATH="$PATH:$(npm bin)"
-  - npm install -g codeclimate-test-reporter
 script:
   - npm test
 after_script:
   # - codeclimate-test-reporter < lcov.info
+  - npm install -g codeclimate-test-reporter
   - codeclimate < ./coverage/lcov.info

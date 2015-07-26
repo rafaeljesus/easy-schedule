@@ -1,6 +1,6 @@
 ## easy-schedule
 
-[![Circle CI](https://circleci.com/gh/rafaeljesus/easy-schedule.svg?style=svg)](https://circleci.com/gh/rafaeljesus/easy-schedule) [![Code Climate](https://codeclimate.com/github/rafaeljesus/easy-schedule/badges/gpa.svg)](https://codeclimate.com/github/rafaeljesus/easy-schedule) [![Test Coverage](https://codeclimate.com/github/rafaeljesus/easy-schedule/badges/coverage.svg)](https://codeclimate.com/github/rafaeljesus/easy-schedule/coverage)
+[![Build Status](https://travis-ci.org/rafaeljesus/easy-schedule.svg)](https://travis-ci.org/rafaeljesus/easy-schedule) [![Code Climate](https://codeclimate.com/github/rafaeljesus/easy-schedule/badges/gpa.svg)](https://codeclimate.com/github/rafaeljesus/easy-schedule) [![Test Coverage](https://codeclimate.com/github/rafaeljesus/easy-schedule/badges/coverage.svg)](https://codeclimate.com/github/rafaeljesus/easy-schedule/coverage)
 
 Easy Schedule handles job scheduling for your application by storing and managing events that correspond to actions that your application intends to execute in the future.
 At the appropriate time, Easy Schedule calls back to your application at the provided URL to signal that some work must be completed.

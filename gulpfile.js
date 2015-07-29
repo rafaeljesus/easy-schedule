@@ -4,7 +4,16 @@ const gulp      = require('gulp')
   , plugins     = require('gulp-load-plugins')();
 
 gulp.task('lint', function() {
-  return gulp.src(['./api/**/*.js', './test/**/*spec.js', 'gulpfile.js', 'app.js', './bin/easy.schedule.js'])
+  let src = [
+    './api/**/*.js',
+    './middlewares/**/*.js',
+    './lib/**/*.js',
+    './test/**/*spec.js',
+    './bin/easy.schedule.js',
+    'gulpfile.js',
+    'app.js'
+  ];
+  return gulp.src(src)
     .pipe(plugins.jshint('.jshintrc'))
     .pipe(plugins.jshint.reporter('jshint-stylish'))
     .pipe(plugins.jshint.reporter('fail'));

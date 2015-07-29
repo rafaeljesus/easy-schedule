@@ -15,10 +15,10 @@ describe('SchedulerSpec', function() {
 
   describe('#use', function() {
 
-    it('should subscribe to schedule:new', function() {
+    it('should subscribe to schedule:created', function() {
       let spy = sinon.spy(redis, 'subscribe');
       scheduler.use(redis);
-      expect(spy).to.have.been.calledWith('schedule:new');
+      expect(spy).to.have.been.calledWith('schedule:created');
       spy.restore();
     });
 

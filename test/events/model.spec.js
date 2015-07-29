@@ -68,12 +68,12 @@ describe('EventModel', function() {
     }
   });
 
-  it('should schedule a event and publish schedule:new event', function* (done) {
+  it('should schedule a event and publish schedule:created', function* (done) {
     let spy = sinon.spy(redis, 'publish');
     try {
       let evt = yield Event.schedule(acckey, event1);
       expect(evt.id).to.not.be.empty;
-      expect(spy).to.have.been.calledWith('schedule:new');
+      expect(spy).to.have.been.calledWith('schedule:created');
       done();
     } catch(err) {
       done(err);
@@ -81,8 +81,8 @@ describe('EventModel', function() {
     spy.restore();
   });
 
-  it('should update a schedule a event');
+  it('should update a schedule event and publish schedule:updated');
 
-  it('should delete a event by id');
+  it('should delete a schedule event and publish schedule:stoped');
 
 });

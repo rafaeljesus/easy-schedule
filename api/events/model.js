@@ -28,7 +28,7 @@ exports.schedule = function* (acckey, evt) {
   yield [
     redis.hmset(key + ':' + evt.id, evt),
     redis.lpush(key, evtfy),
-    redis.publish('schedule:new', evtfy)
+    redis.publish('schedule:created', evtfy)
   ];
 
   return yield this.get(acckey, evt.id);

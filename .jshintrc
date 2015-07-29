@@ -1,6 +1,5 @@
 {
   "node": true,
-  "predef": ["-Promise"],
   "esnext": true,
   "bitwise": true,
   "undef": true,

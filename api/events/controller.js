@@ -8,9 +8,9 @@ exports.index = function *(next) {
 };
 
 exports.create = function *(next) {
-  let key = this.user.name
-    , event = this.body;
-  this.body = yield Event.schedule(key, event);
+  let acckey = this.user.name
+    , event = this.request.body;
+  this.body = yield Event.schedule(acckey, event);
 };
 
 exports.show = function *(next) {

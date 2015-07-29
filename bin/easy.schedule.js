@@ -5,15 +5,5 @@ const server = require('../app')
 
 if (!module.parent) {
   server.listen(port);
-  server.on('listening', onListening);
-  server.on('error', onError);
-}
-
-function onListening() {
   console.log('App is running at: ', port);
-}
-
-function onError(err) {
-  console.log(err, 'App failed to start');
-  throw err;
 }

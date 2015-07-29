@@ -2,17 +2,18 @@
 
 const chai      = require('chai')
   , mocha       = require('mocha')
-  // , sinon       = require('sinon')
-  // , sinonChai   = require('sinon-chai')
+  , sinon       = require('sinon')
+  , sinonChai   = require('sinon-chai')
   , expect      = chai.expect
+  , redis       = require('../../lib/redis')
   , Event       = require('../../api/events/model');
 
-// chai.use(sinonChai);
+chai.use(sinonChai);
 require('co-mocha')(mocha);
 
 describe('EventModel', function() {
 
-  let key = 'user-hash';
+  let acckey = 'user-hash';
   let event1 = {
     url: 'https://example1.com',
     type: 'Recurring',
@@ -27,8 +28,8 @@ describe('EventModel', function() {
   beforeEach(function *(done) {
     try {
       yield [
-        Event.schedule(key, event1),
-        Event.schedule(key, event2)
+        Event.schedule(acckey, event1),
+        Event.schedule(acckey, event2)
       ];
       done();
     } catch(err) {
@@ -38,7 +39,7 @@ describe('EventModel', function() {
 
   afterEach(function *(done) {
     try {
-      yield Event.delete(key);
+      yield Event.delete(acckey);
       done();
     } catch(err) {
       done(err);
@@ -47,7 +48,7 @@ describe('EventModel', function() {
 
   it('should find all events', function* (done) {
     try {
-      let evts = yield Event.find(key);
+      let evts = yield Event.find(acckey);
       expect(evts.length).to.be.equal(2);
       expect(evts[0].id).to.not.be.empty;
       expect(evts[1].id).to.not.be.empty;
@@ -59,7 +60,7 @@ describe('EventModel', function() {
 
   it('should get a event by id', function* (done) {
     try {
-      let evt = yield Event.get(key, event1.id);
+      let evt = yield Event.get(acckey, event1.id);
       expect(evt.url).to.be.equal(event1.url);
       done();
     } catch(err) {
@@ -67,7 +68,18 @@ describe('EventModel', function() {
     }
   });
 
-  it('should create a schedule event');
+  it('should schedule a event and publish schedule:new event', function* (done) {
+    let spy = sinon.spy(redis, 'publish');
+    try {
+      let evt = yield Event.schedule(acckey, event1);
+      expect(evt.id).to.not.be.empty;
+      expect(spy).to.have.been.calledWith('schedule:new');
+      done();
+    } catch(err) {
+      done(err);
+    }
+    spy.restore();
+  });
 
   it('should update a schedule a event');
 

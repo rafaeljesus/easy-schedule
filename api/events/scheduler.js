@@ -4,37 +4,33 @@ const co        = require('co')
   , request     = require('co-request')
   , schedule    = require('node-schedule');
 
-var Scheduler = function(redis) {
-  if(!(this instanceof Scheduler)) return new Scheduler(redis);
+let Scheduler = function(redis) {
+  if (!(this instanceof Scheduler)) return new Scheduler(redis);
   redis.subscribe('schedule:created');
-  redis.on('message', this.handleMessage);
-};
-
-Scheduler.use = function() {
-  Scheduler.apply(this, arguments);
-};
-
-var scheduleJob = function(evt) {
-  let cron = evt.cron ?
-    evt.cron :
-    new Date(evt.when);
-
-  return new Promise(function(resolve, reject) {
-    schedule.scheduleJob(cron, function() {
-      resolve(arguments);
-    });
-  });
+  redis.on('message', this.handleMessage.bind(this));
 };
 
 Scheduler.prototype.handleMessage = function(channel, message) {
   let evt = JSON.parse(message);
-  return co(function* () {
-    yield scheduleJob(evt);
-    let res = yield request(evt.url);
+  let cron = evt.cron ?
+    evt.cron :
+    new Date(evt.when);
+
+  schedule.scheduleJob(cron, this._onEvent.bind(null, evt));
+};
+
+Scheduler.prototype._onEvent = function(evt) {
+  co(function* () {
+    return yield request(evt.url);
+  }).then(function(res) {
     console.log('succesfully sent cron job request', res.statusCode);
   }).catch(function(err) {
     console.log('failed to send cron job request', err);
   });
+};
+
+Scheduler.use = function() {
+  Scheduler.apply(this, arguments);
 };
 
 module.exports = Scheduler;

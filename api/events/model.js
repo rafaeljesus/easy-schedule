@@ -1,6 +1,6 @@
 'use strict';
 
-let _       = require('lodash')
+const _     = require('lodash')
   , uuid    = require('node-uuid')
   , redis   = require('../../lib/redis')
   , name    = 'events';

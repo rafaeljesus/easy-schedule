@@ -16,24 +16,38 @@ exports.get = function* (acckey, id) {
   return yield redis.hgetall(key + ':' + id);
 };
 
-exports.schedule = function* (acckey, evt) {
-  evt = _.assign(evt, {
-    id: uuid.v4(),
-    status: 'active'
-  });
-
+exports.save = function* (acckey, evt) {
   let key = name + ':' + acckey;
-  let evtfy = JSON.stringify(evt);
+  let action = 'updated';
 
+  if (!evt.id) {
+    action = 'created';
+    evt = _.assign(evt, {
+      id: uuid.v4(),
+      status: 'active'
+    });
+  }
+
+  let evtfy = JSON.stringify(evt);
   yield [
     redis.hmset(key + ':' + evt.id, evt),
     redis.lpush(key, evtfy),
-    redis.publish('schedule:created', evtfy)
+    redis.publish('schedule:' + action, evtfy)
   ];
 
   return yield this.get(acckey, evt.id);
 };
 
-exports.delete = function(acckey) {
-  return redis.del(name + ':' + acckey);
+exports.delete = function* (acckey, id) {
+  id || (id = 0);
+  try {
+    let key = name + ':' + acckey;
+    let res = yield [
+      redis.del(key),
+      redis.del(key + ':' + id)
+    ];
+    return res;
+  } catch(err) {
+    throw err;
+  }
 };

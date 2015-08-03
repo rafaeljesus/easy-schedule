@@ -11,23 +11,16 @@ require('co-mocha')(mocha);
 
 describe('EventsControllerSpec', function() {
 
-  let key = 'user-hash';
-  let event1 = {
-    url: 'https://example1.com',
-    type: 'Recurring',
-    cron: '* * * * ?'
-  };
-  let event2 = {
-    url: 'https://example2.com',
-    type: 'Recurring',
-    cron: '* * * * ?'
-  };
+  let key = 'user-hash'
+    , fixture = require('./fixture')()
+    , evt1 = fixture.event1
+    , evt2 = fixture.event2;
 
   beforeEach(function *(done) {
     try {
       yield [
-        Event.schedule(key, event1),
-        Event.schedule(key, event2)
+        Event.save(key, evt1),
+        Event.save(key, evt2)
       ];
       done();
     } catch(err) {
@@ -37,7 +30,10 @@ describe('EventsControllerSpec', function() {
 
   afterEach(function *(done) {
     try {
-      yield Event.delete(key);
+      yield [
+        Event.delete(key, evt1.id),
+        Event.delete(key, evt2.id)
+      ];
       done();
     } catch(err) {
       done(err);
@@ -64,7 +60,7 @@ describe('EventsControllerSpec', function() {
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
           expect(res.body.length).to.be.equal(2);
-          expect(res.body).to.eql([event2, event1]);
+          expect(res.body).to.eql([evt2, evt1]);
           done();
         });
     });
@@ -73,12 +69,12 @@ describe('EventsControllerSpec', function() {
   describe('GET /events/:id', function() {
     it('should find a event by id', function(done) {
       request
-        .get('/v1/events/' + event1.id)
+        .get('/v1/events/' + evt1.id)
         .auth('user-hash', 'user-pass')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
-          expect(res.body.id).to.eql(event1.id);
+          expect(res.body.id).to.eql(evt1.id);
           done();
         });
     });

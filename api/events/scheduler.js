@@ -7,6 +7,7 @@ const co        = require('co')
 let Scheduler = function(redis) {
   if (!(this instanceof Scheduler)) return new Scheduler(redis);
   redis.subscribe('schedule:created');
+  redis.subscribe('schedule:updated');
   redis.on('message', this.handleMessage.bind(this));
 };
 

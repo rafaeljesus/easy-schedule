@@ -10,7 +10,7 @@ exports.index = function *(next) {
 exports.create = function *(next) {
   let acckey = this.user.name
     , event = this.request.body;
-  this.body = yield Event.schedule(acckey, event);
+  this.body = yield Event.create(acckey, event);
 };
 
 exports.show = function *(next) {

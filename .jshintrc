@@ -20,6 +20,7 @@
     "it": false,
     "xit": false,
     "describe": false,
+    "context": false,
     "xdescribe": false,
     "before": false,
     "after": false,

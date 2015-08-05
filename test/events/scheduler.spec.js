@@ -7,6 +7,7 @@ const chai      = require('chai')
   , schedule    = require('node-schedule')
   , expect      = chai.expect
   , redis       = require('../../lib/redis-sub')
+  , Event       = require('../../api/events/model')
   , scheduler   = require('../../api/events/scheduler');
 
 chai.use(sinonChai);
@@ -47,7 +48,30 @@ describe('SchedulerSpec', function() {
     });
   });
 
-  it('#start');
+  describe('#start', function() {
+
+    let findAllStub
+      , _scheduleStub
+      , fixture = require('./fixture')()
+      , evt1 = fixture.event1
+      , evt2 = fixture.event2;
+
+    afterEach(function() {
+      findAllStub.restore();
+      _scheduleStub.restore();
+    });
+
+    it('should return all events', function* () {
+      let sch = scheduler(redis);
+      _scheduleStub = sinon.stub(sch, '_schedule');
+      findAllStub = sinon.stub(Event, 'findAll', function() {
+        return [evt1, evt2];
+      });
+      yield sch.start();
+      expect(findAllStub).to.have.been.called;
+      expect(_scheduleStub).to.have.been.calledTwice;
+    });
+  });
 
   describe('#handleMessage', function() {
 

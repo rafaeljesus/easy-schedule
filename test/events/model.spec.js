@@ -134,9 +134,10 @@ describe('EventModel', function() {
         , fixture = require('./fixture')()
         , evt1 = fixture.event1;
 
-      beforeEach(function* () {
+      beforeEach(function* (done) {
         spy = sinon.spy(redis, 'publish');
         evt1 = yield Event.save(acckey, evt1);
+        done();
       });
 
       afterEach(function *(done) {

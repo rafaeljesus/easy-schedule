@@ -14,38 +14,62 @@ require('co-mocha')(mocha);
 
 describe('SchedulerSpec', function() {
 
+  let fixture = require('./fixture')().event1;
   let message = {
-    url: 'http://google.com',
-    cron: '* * * * * *',
-    retries: 1
+    action: 'created',
+    body: fixture
   };
 
   describe('#use', function() {
 
+    let spy;
+
+    afterEach(function() {
+      spy.restore();
+    });
+
     it('should subscribe to schedule:created', function() {
-      let spy = sinon.spy(redis, 'subscribe');
+      spy = sinon.spy(redis, 'subscribe');
       scheduler.use(redis);
       expect(spy).to.have.been.calledWith('schedule:created');
-      spy.restore();
+    });
+
+    it('should subscribe to schedule:updated', function() {
+      spy = sinon.spy(redis, 'subscribe');
+      scheduler.use(redis);
+      expect(spy).to.have.been.calledWith('schedule:updated');
     });
 
     it('should listen to redis message', function() {
-      let spy = sinon.spy(redis, 'on');
+      spy = sinon.spy(redis, 'on');
       scheduler.use(redis);
       expect(spy).to.have.been.calledWith('message');
-      spy.restore();
     });
   });
 
+  it('#start');
+
   describe('#handleMessage', function() {
 
-    it('should schedule a job event', function(done) {
-      let channel = {};
-      let spy = sinon.spy(schedule, 'scheduleJob');
-      let sch = scheduler(redis);
-      sch.handleMessage(channel, JSON.stringify(message));
-      expect(spy).to.have.been.calledWith(message.cron);
-      done();
+    let channel, spy;
+
+    beforeEach(function() {
+      channel = {};
+      spy = sinon.spy(schedule, 'scheduleJob');
+    });
+
+    afterEach(function() {
+      spy.restore();
+    });
+
+    context('when action is created', function() {
+
+      it('should schedule a job event', function* (done) {
+        let sch = scheduler(redis);
+        yield sch.handleMessage(channel, JSON.stringify(message));
+        expect(spy).to.have.been.calledWith(fixture.cron);
+        done();
+      });
     });
   });
 
@@ -55,7 +79,7 @@ describe('SchedulerSpec', function() {
       , nock = require('nock');
 
     before(function() {
-      httpMock = nock(message.url)
+      httpMock = nock(message.body.url)
         .get('/')
         .reply(200);
     });
@@ -68,7 +92,7 @@ describe('SchedulerSpec', function() {
 
     it('should send http request', function(done) {
       let sch = scheduler(redis);
-      sch._onEvent(message);
+      sch._onEvent(message.body);
       setTimeout(done, 100);
     });
   });

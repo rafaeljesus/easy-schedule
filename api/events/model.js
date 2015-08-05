@@ -5,6 +5,10 @@ const _     = require('lodash')
   , redis   = require('../../lib/redis')
   , name    = 'events';
 
+exports.findAll = function* () {
+  return yield redis.hgetall(name);
+};
+
 exports.find = function* (acckey) {
   let key = name + ':' + acckey;
   let evts = yield redis.lrange(key, 0, -1);
@@ -28,11 +32,14 @@ exports.save = function* (acckey, evt) {
     });
   }
 
-  let evtfy = JSON.stringify(evt);
   yield [
+    redis.hmset(name, evt),
     redis.hmset(key + ':' + evt.id, evt),
-    redis.lpush(key, evtfy),
-    redis.publish('schedule:' + action, evtfy)
+    redis.lpush(key, JSON.stringify(evt)),
+    redis.publish('schedule:' + action, JSON.stringify({
+      action: action,
+      body: evt
+    }))
   ];
 
   return yield this.get(acckey, evt.id);
@@ -43,6 +50,7 @@ exports.delete = function* (acckey, id) {
   try {
     let key = name + ':' + acckey;
     let res = yield [
+      redis.del(name),
       redis.del(key),
       redis.del(key + ':' + id)
     ];

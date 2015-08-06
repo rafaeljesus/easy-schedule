@@ -26,9 +26,15 @@ Scheduler.prototype.start = function* () {
 
 Scheduler.prototype.handleMessage = function* (channel, message) {
   let payload = JSON.parse(message)
-    , evt = payload.body;
+    , evt = payload.body
+    , action = payload.action;
 
-  this._schedule(evt);
+  if (action === 'deleted' && this.jobs[evt.id]) {
+    this.jobs[evt.id].cancel();
+    delete this.jobs[evt.id];
+  } else {
+    this._schedule(evt);
+  }
 };
 
 Scheduler.prototype._schedule = function(evt) {
@@ -36,7 +42,8 @@ Scheduler.prototype._schedule = function(evt) {
     evt.cron :
     new Date(evt.when);
 
-  schedule.scheduleJob(cron, this._onEvent.bind(null, evt));
+  let job = schedule.scheduleJob(cron, this._onEvent.bind(null, evt));
+  this.jobs[evt.id] = job;
 };
 
 Scheduler.prototype._onEvent = function(evt) {

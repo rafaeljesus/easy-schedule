@@ -16,6 +16,7 @@ require('co-mocha')(mocha);
 describe('SchedulerSpec', function() {
 
   let fixture = require('./fixture')().event1;
+  fixture.id = 1;
   let message = {
     action: 'created',
     body: fixture
@@ -75,12 +76,8 @@ describe('SchedulerSpec', function() {
 
   describe('#handleMessage', function() {
 
-    let channel, spy;
-
-    beforeEach(function() {
-      channel = {};
-      spy = sinon.spy(schedule, 'scheduleJob');
-    });
+    let channel = {}
+      , spy;
 
     afterEach(function() {
       spy.restore();
@@ -88,11 +85,36 @@ describe('SchedulerSpec', function() {
 
     context('when action is created', function() {
 
+      beforeEach(function() {
+        spy = sinon.spy(schedule, 'scheduleJob');
+      });
+
       it('should schedule a job event', function* (done) {
         let sch = scheduler(redis);
-        yield sch.handleMessage(channel, JSON.stringify(message));
-        expect(spy).to.have.been.calledWith(fixture.cron);
-        done();
+        try {
+          yield sch.handleMessage(channel, JSON.stringify(message));
+          expect(spy).to.have.been.calledWith(fixture.cron);
+          expect(sch.jobs).to.not.be.empty;
+          done();
+        } catch(err) {
+          done(err);
+        }
+      });
+    });
+
+    context('when action is deleted', function() {
+
+      it('should delete a job event', function* (done) {
+        let sch = scheduler(redis);
+        message.action = 'deleted';
+        try {
+          sch._schedule(message.body);
+          yield sch.handleMessage(channel, JSON.stringify(message));
+          expect(sch.jobs).to.be.empty;
+          done();
+        } catch(err) {
+          done(err);
+        }
       });
     });
   });

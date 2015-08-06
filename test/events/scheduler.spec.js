@@ -30,16 +30,12 @@ describe('SchedulerSpec', function() {
       spy.restore();
     });
 
-    it('should subscribe to schedule:created', function() {
+    it('should subscribe to schedule:created|updated|deleted', function() {
       spy = sinon.spy(redis, 'subscribe');
       scheduler.use(redis);
       expect(spy).to.have.been.calledWith('schedule:created');
-    });
-
-    it('should subscribe to schedule:updated', function() {
-      spy = sinon.spy(redis, 'subscribe');
-      scheduler.use(redis);
       expect(spy).to.have.been.calledWith('schedule:updated');
+      expect(spy).to.have.been.calledWith('schedule:deleted');
     });
 
     it('should listen to redis message', function() {
@@ -51,19 +47,23 @@ describe('SchedulerSpec', function() {
 
   describe('#start', function() {
 
-    let findAllStub
+    let sch
+      , findAllStub
       , _scheduleStub
       , fixture = require('./fixture')()
       , evt1 = fixture.event1
       , evt2 = fixture.event2;
 
-    afterEach(function() {
+    before(function() {
+      sch = scheduler(redis);
+    });
+
+    after(function() {
       findAllStub.restore();
       _scheduleStub.restore();
     });
 
     it('should return all events', function* () {
-      let sch = scheduler(redis);
       _scheduleStub = sinon.stub(sch, '_schedule');
       findAllStub = sinon.stub(Event, 'findAll', function() {
         return [evt1, evt2];
@@ -85,7 +85,7 @@ describe('SchedulerSpec', function() {
 
     context('when action is created', function() {
 
-      beforeEach(function() {
+      before(function() {
         spy = sinon.spy(schedule, 'scheduleJob');
       });
 
@@ -102,13 +102,56 @@ describe('SchedulerSpec', function() {
       });
     });
 
+    context('when action is updated', function() {
+
+      let sch
+        , cancelSpy
+        , _scheduleSpy;
+
+      before(function() {
+        sch = scheduler(redis);
+        message.action = 'updated';
+        sch._schedule(message.body);
+        cancelSpy = sinon.spy(sch.jobs[message.body.id], 'cancel');
+        _scheduleSpy = sinon.spy(sch, '_schedule');
+      });
+
+      after(function() {
+        cancelSpy.restore();
+        _scheduleSpy.restore();
+      });
+
+      it('should update a job event', function* (done) {
+        try {
+          yield sch.handleMessage(channel, JSON.stringify(message));
+          expect(cancelSpy).to.have.been.called;
+          expect(_scheduleSpy).to.have.been.called;
+          expect(sch.jobs).to.not.be.empty;
+          done();
+        } catch(err) {
+          done(err);
+        }
+      });
+    });
+
     context('when action is deleted', function() {
 
-      it('should delete a job event', function* (done) {
-        let sch = scheduler(redis);
+      let sch
+        , cancelSpy;
+
+      before(function() {
+        sch = scheduler(redis);
         message.action = 'deleted';
+        sch._schedule(message.body);
+        cancelSpy = sinon.spy(sch.jobs[message.body.id], 'cancel');
+      });
+
+      after(function() {
+        cancelSpy.restore();
+      });
+
+      it('should delete a job event', function* (done) {
         try {
-          sch._schedule(message.body);
           yield sch.handleMessage(channel, JSON.stringify(message));
           expect(sch.jobs).to.be.empty;
           done();

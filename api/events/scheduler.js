@@ -10,6 +10,7 @@ let Scheduler = function(redis) {
   this.jobs = {};
   redis.subscribe('schedule:created');
   redis.subscribe('schedule:updated');
+  redis.subscribe('schedule:deleted');
   redis.on('message', this.handleMessage.bind(this));
   this.start();
 };
@@ -29,11 +30,12 @@ Scheduler.prototype.handleMessage = function* (channel, message) {
     , evt = payload.body
     , action = payload.action;
 
-  if (action === 'deleted' && this.jobs[evt.id]) {
+  if (action === 'created') {
+    this._schedule(evt);
+  } else {
     this.jobs[evt.id].cancel();
     delete this.jobs[evt.id];
-  } else {
-    this._schedule(evt);
+    if (action === 'updated') this._schedule(evt);
   }
 };
 

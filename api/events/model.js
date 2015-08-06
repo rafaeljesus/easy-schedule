@@ -32,27 +32,37 @@ exports.save = function* (acckey, evt) {
     });
   }
 
-  yield [
-    redis.hmset(name, evt),
-    redis.hmset(key + ':' + evt.id, evt),
-    redis.lpush(key, JSON.stringify(evt)),
-    redis.publish('schedule:' + action, JSON.stringify({
-      action: action,
-      body: evt
-    }))
-  ];
+  try {
+    yield [
+      redis.hmset(name, evt),
+      redis.hmset(key + ':' + evt.id, evt),
+      redis.lpush(key, JSON.stringify(evt)),
+      redis.publish('schedule:' + action, JSON.stringify({
+        action: action,
+        body: evt
+      }))
+    ];
 
-  return yield this.get(acckey, evt.id);
+    return yield this.get(acckey, evt.id);
+  } catch(err) {
+    throw err;
+  }
 };
 
 exports.delete = function* (acckey, id) {
   id || (id = 0);
   try {
     let key = name + ':' + acckey;
+    let evt = yield this.get(acckey, id);
+
     let res = yield [
       redis.del(name),
       redis.del(key),
-      redis.del(key + ':' + id)
+      redis.del(key + ':' + id),
+      redis.publish('schedule:deleted', JSON.stringify({
+        action: 'deleted',
+        body: evt
+      }))
     ];
     return res;
   } catch(err) {

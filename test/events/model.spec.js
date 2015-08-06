@@ -21,7 +21,7 @@ describe('EventModel', function() {
       , evt1 = fixture.event1
       , evt2 = fixture.event2;
 
-    beforeEach(function *(done) {
+    before(function *(done) {
       try {
         let res = yield [
           Event.save(acckey, evt1),
@@ -35,7 +35,7 @@ describe('EventModel', function() {
       }
     });
 
-    afterEach(function *(done) {
+    after(function *(done) {
       try {
         yield [
           Event.delete(acckey, evt1.id),
@@ -65,7 +65,7 @@ describe('EventModel', function() {
     let fixture = require('./fixture')()
       , evt1 = fixture.event1;
 
-    beforeEach(function *(done) {
+    before(function *(done) {
       try {
         evt1 = yield Event.save(acckey, evt1);
         done();
@@ -74,7 +74,7 @@ describe('EventModel', function() {
       }
     });
 
-    afterEach(function *(done) {
+    after(function *(done) {
       try {
         yield Event.delete(acckey, evt1.id);
         done();
@@ -102,11 +102,11 @@ describe('EventModel', function() {
         , fixture = require('./fixture')()
         , evt1 = fixture.event1;
 
-      beforeEach(function() {
+      before(function() {
         spy = sinon.spy(redis, 'publish');
       });
 
-      afterEach(function* (done) {
+      after(function* (done) {
         spy.restore();
         try {
           yield Event.delete(acckey, evt1.id);
@@ -134,13 +134,13 @@ describe('EventModel', function() {
         , fixture = require('./fixture')()
         , evt1 = fixture.event1;
 
-      beforeEach(function* (done) {
+      before(function* (done) {
         spy = sinon.spy(redis, 'publish');
         evt1 = yield Event.save(acckey, evt1);
         done();
       });
 
-      afterEach(function *(done) {
+      after(function *(done) {
         spy.restore();
         try {
           yield Event.delete(acckey, evt1.id);
@@ -164,6 +164,9 @@ describe('EventModel', function() {
     });
   });
 
-  it('should delete a schedule event and publish schedule:stoped');
+  describe('#delete', function() {
+
+    it('should delete a schedule event and publish schedule:deleted');
+  });
 
 });

@@ -24,8 +24,8 @@ describe('EventModel', function() {
     before(function *(done) {
       try {
         let res = yield [
-          Event.save(acckey, evt1),
-          Event.save(acckey, evt2)
+          Event.create(acckey, evt1),
+          Event.create(acckey, evt2)
         ];
         evt1 = res[0];
         evt2 = res[1];
@@ -67,7 +67,7 @@ describe('EventModel', function() {
 
     before(function *(done) {
       try {
-        evt1 = yield Event.save(acckey, evt1);
+        evt1 = yield Event.create(acckey, evt1);
         done();
       } catch(err) {
         done(err);
@@ -94,79 +94,99 @@ describe('EventModel', function() {
     });
   });
 
-  describe('#save', function() {
+  describe('#create', function() {
 
-    context('when create', function() {
+    let spy
+      , fixture = require('./fixture')()
+      , evt1 = fixture.event1;
 
-      let spy
-        , fixture = require('./fixture')()
-        , evt1 = fixture.event1;
-
-      before(function() {
-        spy = sinon.spy(redis, 'publish');
-      });
-
-      after(function* (done) {
-        spy.restore();
-        try {
-          yield Event.delete(acckey, evt1.id);
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
-
-      it('should create a event and publish schedule:created', function* (done) {
-        try {
-          evt1 = yield Event.save(acckey, evt1);
-          expect(evt1.id).to.not.be.empty;
-          expect(spy).to.have.been.calledWith('schedule:created');
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
+    before(function() {
+      spy = sinon.spy(redis, 'publish');
     });
 
-    context('when update', function() {
-
-      let spy
-        , fixture = require('./fixture')()
-        , evt1 = fixture.event1;
-
-      before(function* (done) {
-        spy = sinon.spy(redis, 'publish');
-        evt1 = yield Event.save(acckey, evt1);
+    after(function* (done) {
+      spy.restore();
+      try {
+        yield Event.delete(acckey, evt1.id);
         done();
-      });
+      } catch(err) {
+        done(err);
+      }
+    });
 
-      after(function *(done) {
-        spy.restore();
-        try {
-          yield Event.delete(acckey, evt1.id);
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
+    it('should create a event and publish schedule:created', function* (done) {
+      try {
+        evt1 = yield Event.create(acckey, evt1);
+        expect(evt1.id).to.not.be.empty;
+        expect(spy).to.have.been.calledWith('schedule:created');
+        done();
+      } catch(err) {
+        done(err);
+      }
+    });
+  });
 
-      it('should update a event and publish schedule:updated', function* (done) {
-        evt1.url = 'https://example2.com';
-        try {
-          let evt = yield Event.save(acckey, evt1);
-          expect(evt.url).to.be.equal(evt1.url);
-          expect(spy).to.have.been.calledWith('schedule:updated');
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
+  describe('#update', function() {
+
+    let spy
+      , fixture = require('./fixture')()
+      , evt1 = fixture.event1;
+
+    before(function* (done) {
+      spy = sinon.spy(redis, 'publish');
+      evt1 = yield Event.create(acckey, evt1);
+      done();
+    });
+
+    after(function *(done) {
+      spy.restore();
+      try {
+        yield Event.delete(acckey, evt1.id);
+        done();
+      } catch(err) {
+        done(err);
+      }
+    });
+
+    it('should update a event and publish schedule:updated', function* (done) {
+      evt1.url = 'https://example2.com';
+      try {
+        let evt = yield Event.update(acckey, evt1);
+        expect(evt.url).to.be.equal(evt1.url);
+        expect(spy).to.have.been.calledWith('schedule:updated');
+        done();
+      } catch(err) {
+        done(err);
+      }
     });
   });
 
   describe('#delete', function() {
 
-    it('should delete a schedule event and publish schedule:deleted');
+    let spy
+      , fixture = require('./fixture')()
+      , evt1 = fixture.event1;
+
+    before(function* (done) {
+      spy = sinon.spy(redis, 'publish');
+      try {
+        evt1 = yield Event.create(acckey, evt1);
+        done();
+      } catch(err) {
+        done(err);
+      }
+    });
+
+    it('should delete a event and publish schedule:deleted', function* (done) {
+      try {
+        let res = yield Event.delete(acckey, evt1.id);
+        expect(res).to.have.length(4);
+        expect(spy).to.have.been.calledWith('schedule:deleted');
+        done();
+      } catch(err) {
+        done(err);
+      }
+    });
   });
 
 });

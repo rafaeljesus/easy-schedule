@@ -19,8 +19,8 @@ describe('EventsControllerSpec', function() {
   beforeEach(function *(done) {
     try {
       yield [
-        Event.save(key, evt1),
-        Event.save(key, evt2)
+        Event.create(key, evt1),
+        Event.create(key, evt2)
       ];
       done();
     } catch(err) {
@@ -66,7 +66,7 @@ describe('EventsControllerSpec', function() {
     });
   });
 
-  describe('GET /events/:id', function() {
+  describe('GET /v1/events/:id', function() {
     it('should find a event by id', function(done) {
       request
         .get('/v1/events/' + evt1.id)
@@ -80,4 +80,50 @@ describe('EventsControllerSpec', function() {
     });
   });
 
+  describe('POST /v1/events', function() {
+    it('should create a event', function(done) {
+      request
+        .post('/v1/events')
+        .auth('user-hash', 'user-pass')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200, function(err, res) {
+          if (err) return done(err);
+          expect(res.body.id).to.be.ok;
+          done();
+        });
+    });
+  });
+
+  describe('PUT /v1/events/:id', function() {
+    it('should update a event', function(done) {
+      evt1.url = 'https://github.com/rafaeljesus';
+      request
+        .put('/v1/events/' + evt1.id)
+        .auth('user-hash', 'user-pass')
+        .send(evt1)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200, function(err, res) {
+          if (err) return done(err);
+          expect(res.body.url).to.be.equal(evt1.url);
+          done();
+        });
+    });
+  });
+
+  describe('DELETE /v1/events/:id', function() {
+    it('should delete a event', function(done) {
+      request
+        .delete('/v1/events/' + evt1.id)
+        .auth('user-hash', 'user-pass')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200, function(err, res) {
+          if (err) return done(err);
+          expect(res.status).to.be.equal(200);
+          done();
+        });
+    });
+  });
 });

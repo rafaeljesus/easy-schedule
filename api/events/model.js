@@ -20,29 +20,30 @@ exports.get = function* (acckey, id) {
   return yield redis.hgetall(key + ':' + id);
 };
 
-exports.save = function* (acckey, evt) {
+exports.create = function* (acckey, evt) {
   let key = name + ':' + acckey;
-  let action = 'updated';
+  let action = 'created';
 
-  if (!evt.id) {
-    action = 'created';
-    evt = _.assign(evt, {
-      id: uuid.v4(),
-      status: 'active'
-    });
-  }
+  evt = _.assign(evt, {
+    id: uuid.v4(),
+    status: 'active'
+  });
 
   try {
-    yield [
-      redis.hmset(name, evt),
-      redis.hmset(key + ':' + evt.id, evt),
-      redis.lpush(key, JSON.stringify(evt)),
-      redis.publish('schedule:' + action, JSON.stringify({
-        action: action,
-        body: evt
-      }))
-    ];
+    let args = [action, key, evt];
+    yield save.apply(null, args);
+    return yield this.get(acckey, evt.id);
+  } catch(err) {
+    throw err;
+  }
+};
 
+exports.update = function* (acckey, evt) {
+  let key = name + ':' + acckey;
+  let action = 'updated';
+  try {
+    let args = [action, key, evt];
+    yield save.apply(null, args);
     return yield this.get(acckey, evt.id);
   } catch(err) {
     throw err;
@@ -51,21 +52,37 @@ exports.save = function* (acckey, evt) {
 
 exports.delete = function* (acckey, id) {
   id || (id = 0);
+  let key = name + ':' + acckey;
   try {
-    let key = name + ':' + acckey;
     let evt = yield this.get(acckey, id);
-
-    let res = yield [
-      redis.del(name),
-      redis.del(key),
-      redis.del(key + ':' + id),
-      redis.publish('schedule:deleted', JSON.stringify({
-        action: 'deleted',
-        body: evt
-      }))
-    ];
-    return res;
+    let args = [key, id, evt];
+    return yield del.apply(null, args);
   } catch(err) {
     throw err;
   }
 };
+
+function* del(key, id, evt) {
+  let action = 'deleted';
+  return yield [
+    redis.del(name),
+    redis.del(key),
+    redis.del(key + ':' + id),
+    redis.publish('schedule:' + action, JSON.stringify({
+      action: action,
+      body: evt
+    }))
+  ];
+}
+
+function* save(action, key, evt) {
+  return yield [
+    redis.hmset(name, evt),
+    redis.hmset(key + ':' + evt.id, evt),
+    redis.lpush(key, JSON.stringify(evt)),
+    redis.publish('schedule:' + action, JSON.stringify({
+      action: action,
+      body: evt
+    }))
+  ];
+}

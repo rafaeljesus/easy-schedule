@@ -3,6 +3,8 @@
 const koa       = require('koa')
   , mount       = require('koa-mount')
   , koaBody     = require('koa-body')
+  , logger      = require('koa-logger')
+  , cors        = require('kcors')
   , auth        = require('./middlewares/auth')
   , app         = koa()
   , APIhome     = require('./api/home/routes')
@@ -12,7 +14,9 @@ const koa       = require('koa')
 
 scheduler.use(redisSub);
 
+app.use(logger());
 app.use(koaBody());
+app.use(cors());
 app.use(auth());
 app.use(mount('/v1', APIhome.middleware()));
 app.use(mount('/v1/events', APIevents.middleware()));

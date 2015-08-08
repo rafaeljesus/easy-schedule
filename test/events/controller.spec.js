@@ -2,6 +2,7 @@
 
 const supertest = require('supertest')
   , mocha       = require('mocha')
+  , _           = require('lodash')
   , expect      = require('chai').expect
   , redis       = require('../../lib/redis')
   , app         = require('../../app')
@@ -97,11 +98,10 @@ describe('EventsControllerSpec', function() {
   describe('PUT /v1/events/:id', function() {
     it('should update a event', function(done) {
       evt1.url = 'https://github.com/rafaeljesus';
-      delete evt1.id;
       request
         .put('/v1/events/' + evt1.id)
         .auth('user-hash', 'user-pass')
-        .send(evt1)
+        .send(_.omit(evt1, 'id'))
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {

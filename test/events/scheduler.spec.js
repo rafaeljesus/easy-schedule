@@ -89,16 +89,11 @@ describe('SchedulerSpec', function() {
         spy = sinon.spy(schedule, 'scheduleJob');
       });
 
-      it('should schedule a job event', function* (done) {
+      it('should schedule a job event', function() {
         let sch = scheduler(redis);
-        try {
-          yield sch.handleMessage(channel, JSON.stringify(message));
-          expect(spy).to.have.been.calledWith(fixture.cron);
-          expect(sch.jobs).to.not.be.empty;
-          done();
-        } catch(err) {
-          done(err);
-        }
+        sch.handleMessage(channel, JSON.stringify(message));
+        expect(spy).to.have.been.calledWith(fixture.cron);
+        expect(sch.jobs).to.not.be.empty;
       });
     });
 
@@ -121,16 +116,11 @@ describe('SchedulerSpec', function() {
         _scheduleSpy.restore();
       });
 
-      it('should update a job event', function* (done) {
-        try {
-          yield sch.handleMessage(channel, JSON.stringify(message));
-          expect(cancelSpy).to.have.been.called;
-          expect(_scheduleSpy).to.have.been.called;
-          expect(sch.jobs).to.not.be.empty;
-          done();
-        } catch(err) {
-          done(err);
-        }
+      it('should update a job event', function() {
+        sch.handleMessage(channel, JSON.stringify(message));
+        expect(cancelSpy).to.have.been.called;
+        expect(_scheduleSpy).to.have.been.called;
+        expect(sch.jobs).to.not.be.empty;
       });
     });
 
@@ -150,14 +140,9 @@ describe('SchedulerSpec', function() {
         cancelSpy.restore();
       });
 
-      it('should delete a job event', function* (done) {
-        try {
-          yield sch.handleMessage(channel, JSON.stringify(message));
-          expect(sch.jobs).to.be.empty;
-          done();
-        } catch(err) {
-          done(err);
-        }
+      it('should delete a job event', function() {
+        sch.handleMessage(channel, JSON.stringify(message));
+        expect(sch.jobs).to.be.empty;
       });
     });
   });

@@ -162,6 +162,26 @@ describe('SchedulerSpec', function() {
     });
   });
 
+  describe('#_schedule', function() {
+
+    let sch, spy;
+
+    before(function() {
+      sch = scheduler(redis);
+    });
+
+    after(function() {
+      spy.restore();
+    });
+
+    it('should schedule a job', function() {
+      spy = sinon.spy(schedule, 'scheduleJob');
+      sch._schedule(message.body);
+      expect(spy).to.have.been.calledWith(message.body.cron);
+      expect(sch.jobs).to.not.be.empty;
+    });
+  });
+
   describe('#_onEvent', function() {
 
     let httpMock

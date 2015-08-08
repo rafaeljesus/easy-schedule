@@ -3,6 +3,7 @@
 const supertest = require('supertest')
   , mocha       = require('mocha')
   , expect      = require('chai').expect
+  , redis       = require('../../lib/redis')
   , app         = require('../../app')
   , request     = supertest(app.listen())
   , Event       = require('../../api/events/model');
@@ -11,10 +12,10 @@ require('co-mocha')(mocha);
 
 describe('EventsControllerSpec', function() {
 
-  let key = 'user-hash'
-    , fixture = require('./fixture')()
+  let fixture = require('./fixture')()
     , evt1 = fixture.event1
-    , evt2 = fixture.event2;
+    , evt2 = fixture.event2
+    , key = 'user-hash';
 
   beforeEach(function *(done) {
     try {
@@ -30,10 +31,7 @@ describe('EventsControllerSpec', function() {
 
   afterEach(function *(done) {
     try {
-      yield [
-        Event.delete(key, evt1.id),
-        Event.delete(key, evt2.id)
-      ];
+      yield redis.flushdb();
       done();
     } catch(err) {
       done(err);
@@ -86,6 +84,7 @@ describe('EventsControllerSpec', function() {
         .post('/v1/events')
         .auth('user-hash', 'user-pass')
         .set('Accept', 'application/json')
+        .send(evt1)
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
           if (err) return done(err);
@@ -98,6 +97,7 @@ describe('EventsControllerSpec', function() {
   describe('PUT /v1/events/:id', function() {
     it('should update a event', function(done) {
       evt1.url = 'https://github.com/rafaeljesus';
+      delete evt1.id;
       request
         .put('/v1/events/' + evt1.id)
         .auth('user-hash', 'user-pass')

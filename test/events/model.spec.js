@@ -15,6 +15,15 @@ describe('EventModel', function() {
 
   let acckey = 'user-hash';
 
+  afterEach(function *(done) {
+    try {
+      yield redis.flushdb();
+      done();
+    } catch(err) {
+      done(err);
+    }
+  });
+
   describe('#find', function() {
 
     let fixture = require('./fixture')()
@@ -23,23 +32,9 @@ describe('EventModel', function() {
 
     before(function *(done) {
       try {
-        let res = yield [
+        yield [
           Event.create(acckey, evt1),
           Event.create(acckey, evt2)
-        ];
-        evt1 = res[0];
-        evt2 = res[1];
-        done();
-      } catch(err) {
-        done(err);
-      }
-    });
-
-    after(function *(done) {
-      try {
-        yield [
-          Event.delete(acckey, evt1.id),
-          Event.delete(acckey, evt2.id)
         ];
         done();
       } catch(err) {
@@ -74,15 +69,6 @@ describe('EventModel', function() {
       }
     });
 
-    after(function *(done) {
-      try {
-        yield Event.delete(acckey, evt1.id);
-        done();
-      } catch(err) {
-        done(err);
-      }
-    });
-
     it('should get a event by id', function* (done) {
       try {
         let evt = yield Event.get(acckey, evt1.id);
@@ -104,14 +90,8 @@ describe('EventModel', function() {
       spy = sinon.spy(redis, 'publish');
     });
 
-    after(function* (done) {
+    after(function* () {
       spy.restore();
-      try {
-        yield Event.delete(acckey, evt1.id);
-        done();
-      } catch(err) {
-        done(err);
-      }
     });
 
     it('should create a event and publish schedule:created', function* (done) {
@@ -138,14 +118,8 @@ describe('EventModel', function() {
       done();
     });
 
-    after(function *(done) {
+    after(function *() {
       spy.restore();
-      try {
-        yield Event.delete(acckey, evt1.id);
-        done();
-      } catch(err) {
-        done(err);
-      }
     });
 
     it('should update a event and publish schedule:updated', function* (done) {

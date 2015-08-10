@@ -21,7 +21,6 @@ exports.create = function* (next) {
 
 exports.update = function* (next) {
   let login = this.user.login;
-
   let event = _.assign(this.request.body, {
     id: this.params.id
   });

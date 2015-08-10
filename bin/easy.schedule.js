@@ -1,9 +1,12 @@
 'use strict';
 
-const server    = require('../app')
-  , port        = process.env.PORT || 3000;
+const http  = require('http')
+  , app     = require('../app')
+  , port    = process.env.PORT || 3000;
+
+http.createServer(app.callback());
 
 if (!module.parent) {
-  server.listen(port);
-  console.log('App is running at: ', port);
+  app.listen(port);
 }
+

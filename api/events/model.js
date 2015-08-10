@@ -21,11 +21,12 @@ exports.get = function* (acckey, id) {
 };
 
 exports.create = function* (acckey, evt) {
-  let key = name + ':' + acckey;
-  let action = 'created';
+  let key = name + ':' + acckey
+    , action = 'created'
+    , id = uuid.v1();
 
   evt = _.assign(evt, {
-    id: uuid.v4(),
+    id: id,
     status: 'active'
   });
 

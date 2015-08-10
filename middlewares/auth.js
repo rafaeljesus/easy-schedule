@@ -1,11 +1,11 @@
 'use strict';
 
-const debug = require('debug')('async-coders.io:middlewares:auth');
+const User = require('../api/users/model');
 
 var unauthorized = function* (next) {
-  if (this.method !== 'GET') {
-    return yield* next;
-  }
+  let isCreateUser = this.method === 'POST' &&
+    this.path === '/v1/users';
+  if (isCreateUser) return yield* next;
   this.status = 401;
   this.set('WWW-Authenticate', 'Basic realm="sample"');
   if (this.accepts(['html', 'json']) === 'json') {
@@ -29,8 +29,19 @@ var Auth = function() {
       return yield* unauthorized.call(this, next);
     }
 
-    this.user = {name: authorization[0]};
-    debug('auth pass user: %j, headers: %j', this.user, this.header);
+    let user
+      , login = authorization[0]
+      , password = authorization[1];
+
+    try {
+      user = yield User.auth(login, password);
+    } catch(err) {
+      this.throw(500, err);
+    }
+
+    if (!user) return yield* unauthorized.call(this, next);
+
+    this.user = {login: login, password: password};
     yield* next;
   };
 };

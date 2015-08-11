@@ -9,19 +9,19 @@ exports.findAll = function* () {
   return yield redis.hgetall(name);
 };
 
-exports.find = function* (acckey) {
-  let key = name + ':' + acckey;
+exports.find = function* (login) {
+  let key = name + ':' + login;
   let evts = yield redis.lrange(key, 0, -1);
   return evts.map(JSON.parse);
 };
 
-exports.get = function* (acckey, id) {
-  let key = name + ':' + acckey;
+exports.get = function* (login, id) {
+  let key = name + ':' + login;
   return yield redis.hgetall(key + ':' + id);
 };
 
-exports.create = function* (acckey, evt) {
-  let key = name + ':' + acckey
+exports.create = function* (login, evt) {
+  let key = name + ':' + login
     , action = 'created'
     , id = uuid.v1();
 
@@ -30,38 +30,44 @@ exports.create = function* (acckey, evt) {
     status: 'active'
   });
 
+  let args = [action, key, evt, login];
+
   try {
-    let args = [action, key, evt];
-    yield save.apply(null, args);
-    return yield this.get(acckey, evt.id);
+    return yield saveAndReturn.apply(this, args);
   } catch(err) {
     throw err;
   }
 };
 
-exports.update = function* (acckey, evt) {
-  let key = name + ':' + acckey;
-  let action = 'updated';
+exports.update = function* (login, evt) {
+  let key = name + ':' + login
+    , action = 'updated'
+    , args = [action, key, evt, login];
+
   try {
-    let args = [action, key, evt];
-    yield save.apply(null, args);
-    return yield this.get(acckey, evt.id);
+    return yield saveAndReturn.apply(this, args);
   } catch(err) {
     throw err;
   }
 };
 
-exports.delete = function* (acckey, id) {
+exports.delete = function* (login, id) {
   id || (id = 0);
-  let key = name + ':' + acckey;
+  let key = name + ':' + login;
   try {
-    let evt = yield this.get(acckey, id);
+    let evt = yield this.get(login, id);
     let args = [key, id, evt];
     return yield del.apply(null, args);
   } catch(err) {
     throw err;
   }
 };
+
+function* saveAndReturn(action, key, evt, login) {
+  let args = [action, key, evt];
+  yield save.apply(null, args);
+  return yield this.get(login, evt.id);
+}
 
 function* del(key, id, evt) {
   let action = 'deleted';

@@ -11,14 +11,7 @@ require('co-mocha')(mocha);
 describe('HistoryModel', function() {
 
   let login = 'user-hash';
-  let data = {
-    event: 'foo',
-    status: 200,
-    url: 'https://github.com/rafaeljesus/easy-schedule',
-    elapsed: 243,
-    scheduled: '2013-12-13T20:12:43Z',
-    actual: '2013-12-13T20:12:45Z'
-  };
+  let fixture = require('./fixture')();
 
   afterEach(function* (done) {
     try {
@@ -34,8 +27,8 @@ describe('HistoryModel', function() {
     before(function *(done) {
       try {
         yield [
-          History.create(login, data),
-          History.create(login, data)
+          History.create(login, fixture.history1),
+          History.create(login, fixture.history2)
         ];
         done();
       } catch(err) {
@@ -58,8 +51,8 @@ describe('HistoryModel', function() {
 
     it('should create a history event', function* (done) {
       try {
-        let res = yield History.create(login, data);
-        expect(res).to.be.equal(1);
+        let res = yield History.create(login, fixture.history1);
+        expect(res).to.be.eql(1);
         done();
       } catch(err) {
         done(err);

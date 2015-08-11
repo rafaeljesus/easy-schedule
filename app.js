@@ -13,6 +13,7 @@ const koa       = require('koa')
   , APIhome     = require('./api/home/routes')
   , APIusers    = require('./api/users/routes')
   , APIevents   = require('./api/events/routes')
+  , APIhistory  = require('./api/history/routes')
   , app         = koa();
 
 let compressOpts = {
@@ -51,6 +52,7 @@ app.use(auth());
 app.use(mount('/v1', APIhome.middleware()));
 app.use(mount('/v1/users', APIusers.middleware()));
 app.use(mount('/v1/events', APIevents.middleware()));
+app.use(mount('/v1/history', APIhistory.middleware()));
 app.use(handleErr);
 
 module.exports = app;

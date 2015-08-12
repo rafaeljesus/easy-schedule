@@ -3,8 +3,10 @@
 const co        = require('co')
   , request     = require('co-request')
   , _           = require('lodash')
+  , schedule    = require('node-schedule')
+  , log         = require('../../lib/log')
   , Event       = require('../events/model')
-  , schedule    = require('node-schedule');
+  , History     = require('../history/model');
 
 let Scheduler = function(redis) {
   if (!(this instanceof Scheduler)) return new Scheduler(redis);
@@ -25,7 +27,7 @@ Scheduler.prototype.start = function() {
       if (_.isPlainObject(res)) res = [res];
       res.map(_this._schedule, _this);
     } catch(err) {
-      console.log('Scheduler start failed', err);
+      log.error('Scheduler start failed', err);
     }
   });
 };
@@ -45,22 +47,28 @@ Scheduler.prototype.handleMessage = function(channel, message) {
 };
 
 Scheduler.prototype._schedule = function(evt) {
-  let cron = evt.cron ?
-    evt.cron :
-    new Date(evt.when);
+  let cron = evt.cron ? evt.cron : new Date(evt.when)
+    , cb = this._onEvent.bind(null, evt)
+    , job = schedule.scheduleJob(cron, cb);
 
-  let job = schedule.scheduleJob(cron, this._onEvent.bind(null, evt));
   this.jobs[evt.id] = job;
 };
 
 Scheduler.prototype._onEvent = function(evt) {
   co(function* () {
     try {
+      let login = 'rafaeljesus';
       let res = yield request(evt.url);
-      console.log('succesfully sent cron job request', res.statusCode);
+      let history = _.extend(
+        _.result(res, 'statusCode', 'body', 'headers'), {
+        event: evt.id,
+        url: evt.url
+      });
+      yield History.create(login, history);
+      log.info('succesfully sent cron job request', history);
       return res;
     } catch(err) {
-      console.log('failed to send cron job request', err);
+      log.error('failed to send cron job request', err);
     }
   });
 };

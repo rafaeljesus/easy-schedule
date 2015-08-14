@@ -1,26 +1,26 @@
-'use strict';
+'use strict'
 
 const chai      = require('chai')
   , mocha       = require('mocha')
   , expect      = chai.expect
   , redis       = require('../../lib/redis')
-  , History     = require('../../api/history/model');
+  , History     = require('../../api/history/model')
 
-require('co-mocha')(mocha);
+require('co-mocha')(mocha)
 
 describe('HistoryModel', function() {
 
-  let login = 'user-hash';
-  let fixture = require('./fixture')();
+  let login = 'user-hash'
+  let fixture = require('./fixture')()
 
   afterEach(function* (done) {
     try {
-      yield redis.flushdb();
-      done();
+      yield redis.flushdb()
+      done()
     } catch(err) {
-      done(err);
+      done(err)
     }
-  });
+  })
 
   describe('#find', function() {
 
@@ -29,35 +29,35 @@ describe('HistoryModel', function() {
         yield [
           History.create(login, fixture.history1),
           History.create(login, fixture.history2)
-        ];
-        done();
+        ]
+        done()
       } catch(err) {
-        done(err);
+        done(err)
       }
-    });
+    })
 
     it('should find all history', function* (done) {
       try {
-        let res = yield History.find(login);
-        expect(res.length).to.be.equal(2);
-        done();
+        let res = yield History.find(login)
+        expect(res.length).to.be.equal(2)
+        done()
       } catch(err) {
-        done(err);
+        done(err)
       }
-    });
-  });
+    })
+  })
 
   describe('#create', function() {
 
     it('should create a history event', function* (done) {
       try {
-        let res = yield History.create(login, fixture.history1);
-        expect(res).to.be.eql(1);
-        done();
+        let res = yield History.create(login, fixture.history1)
+        expect(res).to.be.eql(1)
+        done()
       } catch(err) {
-        done(err);
+        done(err)
       }
-    });
-  });
+    })
+  })
 
-});
+})

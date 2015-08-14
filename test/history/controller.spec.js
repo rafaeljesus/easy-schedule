@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const supertest = require('supertest')
   , mocha       = require('mocha')
@@ -7,15 +7,15 @@ const supertest = require('supertest')
   , app         = require('../../app')
   , request     = supertest(app.listen())
   , User        = require('../../api/users/model')
-  , History     = require('../../api/history/model');
+  , History     = require('../../api/history/model')
 
-require('co-mocha')(mocha);
+require('co-mocha')(mocha)
 
 describe('HistoryControllerSpec', function() {
 
   let login = 'rafaeljesus'
     , password = 'user-password-hash'
-    , fixture = require('./fixture')();
+    , fixture = require('./fixture')()
 
   beforeEach(function* (done) {
     try {
@@ -23,21 +23,21 @@ describe('HistoryControllerSpec', function() {
         History.create(login, fixture.history1),
         History.create(login, fixture.history2),
         User.create(login, password)
-      ];
-      done();
+      ]
+      done()
     } catch(err) {
-      done(err);
+      done(err)
     }
-  });
+  })
 
   afterEach(function* (done) {
     try {
-      yield redis.flushdb();
-      done();
+      yield redis.flushdb()
+      done()
     } catch(err) {
-      done(err);
+      done(err)
     }
-  });
+  })
 
   describe('GET /v1/history', function() {
     it('should find event history', function(done) {
@@ -48,10 +48,10 @@ describe('HistoryControllerSpec', function() {
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
-          if (err) return done(err);
-          expect(res.body).to.have.length(3);
-          done();
-        });
-    });
-  });
-});
+          if (err) return done(err)
+          expect(res.body).to.have.length(2)
+          done()
+        })
+    })
+  })
+})

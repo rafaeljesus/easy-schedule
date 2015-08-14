@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = function() {
   return  {
@@ -18,5 +18,5 @@ module.exports = function() {
       scheduled: '2013-12-13T20:12:43Z',
       actual: '2013-12-13T20:12:45Z'
     }
-  };
+  }
 }

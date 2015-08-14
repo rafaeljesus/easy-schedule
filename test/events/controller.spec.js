@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const supertest = require('supertest')
   , mocha       = require('mocha')
@@ -8,9 +8,9 @@ const supertest = require('supertest')
   , app         = require('../../app')
   , request     = supertest(app.listen())
   , User        = require('../../api/users/model')
-  , Event       = require('../../api/events/model');
+  , Event       = require('../../api/events/model')
 
-require('co-mocha')(mocha);
+require('co-mocha')(mocha)
 
 describe('EventsControllerSpec', function() {
 
@@ -18,7 +18,7 @@ describe('EventsControllerSpec', function() {
     , evt1 = fixture.event1
     , evt2 = fixture.event2
     , login = 'user-login'
-    , password = 'user-password';
+    , password = 'user-password'
 
   beforeEach(function* (done) {
     try {
@@ -26,23 +26,23 @@ describe('EventsControllerSpec', function() {
         Event.create(login, evt1),
         Event.create(login, evt2),
         User.create(login, password)
-      ];
-      evt1 = res[0];
-      evt2 = res[1];
-      done();
+      ]
+      evt1 = res[0]
+      evt2 = res[1]
+      done()
     } catch(err) {
-      done(err);
+      done(err)
     }
-  });
+  })
 
   afterEach(function* (done) {
     try {
-      yield redis.flushdb();
-      done();
+      yield redis.flushdb()
+      done()
     } catch(err) {
-      done(err);
+      done(err)
     }
-  });
+  })
 
   it('should respond 401', function(done) {
     request
@@ -51,11 +51,11 @@ describe('EventsControllerSpec', function() {
     .set('Accept-Encoding', 'gzip')
     .expect('Content-Type', /json/)
     .expect(401, function(err, res) {
-      if (err) return done(err);
-      expect(res.body.error).to.equal('unauthorized');
-      done();
-    });
-  });
+      if (err) return done(err)
+      expect(res.body.error).to.equal('unauthorized')
+      done()
+    })
+  })
 
   describe('GET /v1/events', function() {
     it('should find all events', function(done) {
@@ -66,13 +66,13 @@ describe('EventsControllerSpec', function() {
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
-          if (err) return done(err);
-          expect(res.body.length).to.be.equal(2);
-          expect(res.body).to.eql([evt2, evt1]);
-          done();
-        });
-    });
-  });
+          if (err) return done(err)
+          expect(res.body.length).to.be.equal(2)
+          expect(res.body).to.eql([evt2, evt1])
+          done()
+        })
+    })
+  })
 
   describe('GET /v1/events/:id', function() {
     it('should find a event by id', function(done) {
@@ -83,12 +83,12 @@ describe('EventsControllerSpec', function() {
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
-          if (err) return done(err);
-          expect(res.body.id).to.eql(evt1.id);
-          done();
-        });
-    });
-  });
+          if (err) return done(err)
+          expect(res.body.id).to.eql(evt1.id)
+          done()
+        })
+    })
+  })
 
   describe('POST /v1/events', function() {
     it('should create a event', function(done) {
@@ -100,16 +100,16 @@ describe('EventsControllerSpec', function() {
         .send(_.omit(evt1, 'id'))
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
-          if (err) return done(err);
-          expect(res.body.id).to.be.ok;
-          done();
-        });
-    });
-  });
+          if (err) return done(err)
+          expect(res.body.id).to.be.ok
+          done()
+        })
+    })
+  })
 
   describe('PUT /v1/events/:id', function() {
     it('should update a event', function(done) {
-      evt1.url = 'https://github.com/rafaeljesus';
+      evt1.url = 'https://github.com/rafaeljesus'
       request
         .put('/v1/events/' + evt1.id)
         .auth(login, password)
@@ -118,12 +118,12 @@ describe('EventsControllerSpec', function() {
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
-          if (err) return done(err);
-          expect(res.body.url).to.be.equal(evt1.url);
-          done();
-        });
-    });
-  });
+          if (err) return done(err)
+          expect(res.body.url).to.be.equal(evt1.url)
+          done()
+        })
+    })
+  })
 
   describe('DELETE /v1/events/:id', function() {
     it('should delete a event', function(done) {
@@ -134,10 +134,10 @@ describe('EventsControllerSpec', function() {
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
-          if (err) return done(err);
-          expect(res.status).to.be.equal(200);
-          done();
-        });
-    });
-  });
-});
+          if (err) return done(err)
+          expect(res.status).to.be.equal(200)
+          done()
+        })
+    })
+  })
+})

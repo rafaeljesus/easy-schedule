@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = function() {
   return {
@@ -12,5 +12,5 @@ module.exports = function() {
       type: 'Recurring',
       cron: '* * * * *'
     }
-  };
-};
+  }
+}

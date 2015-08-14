@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const supertest = require('supertest')
   , mocha       = require('mocha')
@@ -6,23 +6,23 @@ const supertest = require('supertest')
   , redis       = require('../../lib/redis')
   , app         = require('../../app')
   , request     = supertest(app.listen())
-  , User        = require('../../api/users/model');
+  , User        = require('../../api/users/model')
 
-require('co-mocha')(mocha);
+require('co-mocha')(mocha)
 
 describe('UserControllerSpec', function() {
 
   let login = 'user-login'
-    , password = 'user-password';
+    , password = 'user-password'
 
   afterEach(function* (done) {
     try {
-      yield redis.flushdb();
-      done();
+      yield redis.flushdb()
+      done()
     } catch(err) {
-      done(err);
+      done(err)
     }
-  });
+  })
 
   describe('POST /v1/users', function() {
     it('should create a user', function(done) {
@@ -33,24 +33,24 @@ describe('UserControllerSpec', function() {
         .send({login: login, password: password})
         .expect('Content-Type', /json/)
         .expect(201, function(err, res) {
-          if (err) return done(err);
-          expect(res.statusCode).to.be.equal(201);
-          expect(res.body.message).to.be.equal('User was successfully created');
-          done();
-        });
-    });
-  });
+          if (err) return done(err)
+          expect(res.statusCode).to.be.equal(201)
+          expect(res.body.message).to.be.equal('User was successfully created')
+          done()
+        })
+    })
+  })
 
   describe('DELETE /v1/users', function() {
 
     before(function* (done) {
       try {
-        yield User.create(login, password);
-        done();
+        yield User.create(login, password)
+        done()
       } catch(err) {
-        done(err);
+        done(err)
       }
-    });
+    })
 
     it('should delete a user', function(done) {
       request
@@ -60,12 +60,12 @@ describe('UserControllerSpec', function() {
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
-          if (err) return done(err);
-          expect(res.statusCode).to.be.equal(200);
-          expect(res.body.message).to.be.equal('User was successfully deleted');
-          done();
-        });
-    });
-  });
+          if (err) return done(err)
+          expect(res.statusCode).to.be.equal(200)
+          expect(res.body.message).to.be.equal('User was successfully deleted')
+          done()
+        })
+    })
+  })
 
-});
+})

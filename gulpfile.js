@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
 const gulp      = require('gulp')
-  , plugins     = require('gulp-load-plugins')();
+  , plugins     = require('gulp-load-plugins')()
 
 gulp.task('lint', function() {
   let src = [
@@ -12,12 +12,12 @@ gulp.task('lint', function() {
     './bin/easy.schedule.js',
     'gulpfile.js',
     'app.js'
-  ];
+  ]
   return gulp.src(src)
     .pipe(plugins.jshint('.jshintrc'))
     .pipe(plugins.jshint.reporter('jshint-stylish'))
-    .pipe(plugins.jshint.reporter('fail'));
-});
+    .pipe(plugins.jshint.reporter('fail'))
+})
 
 gulp.task('test', function() {
   return gulp.src('./api/**/*.js')
@@ -28,12 +28,12 @@ gulp.task('test', function() {
       .pipe(plugins.mocha({timeout: 5000}))
         .pipe(plugins.istanbul.writeReports())
         .once('end', function() {
-          process.exit();
+          process.exit()
         })
         .on('error', function() {
-          process.exit(1);
-        });
-    });
-});
+          process.exit(1)
+        })
+    })
+})
 
-gulp.task('default', ['lint', 'test']);
+gulp.task('default', ['lint', 'test'])

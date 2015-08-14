@@ -1,8 +1,8 @@
 'use strict';
 
 const router    = require('koa-router')()
-  , controller  = require('./controller');
+  , controller  = require('./controller')
 
-router.get('/', controller.index);
+router.get('/', controller.index)
 
-module.exports = router;
+module.exports = router

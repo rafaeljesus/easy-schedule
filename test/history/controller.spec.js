@@ -49,7 +49,7 @@ describe('HistoryControllerSpec', function() {
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
           if (err) return done(err)
-          expect(res.body).to.have.length(2)
+          expect(res.body).to.have.length(3)
           done()
         })
     })

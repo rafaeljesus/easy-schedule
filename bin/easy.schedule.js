@@ -1,12 +1,25 @@
 'use strict'
 
 const http  = require('http')
-  , app     = require('../app')
-  , port    = process.env.PORT || 3000
+  , cluster = require('cluster')
+  , os      = require('os')
+  , numCPUs = os.cpus().length
 
-http.createServer(app.callback())
+if (cluster.isMaster) {
 
-if (!module.parent) {
-  app.listen(port)
+  for (let i = 0; i < numCPUs; ++i) {
+    cluster.fork()
+  }
+
+} else {
+
+  let app   = require('../app')
+    , port  = process.env.PORT || 3000
+
+  http.createServer(app.callback())
+
+  if (!module.parent) {
+    app.listen(port)
+  }
 }
 

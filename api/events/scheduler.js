@@ -54,8 +54,11 @@ Scheduler.prototype.handleMessage = function(channel, message) {
 }
 
 Scheduler.prototype._schedule = function(evt) {
-  let cron = evt.cron ? evt.cron : new Date(evt.when)
-    , cb = this._onEvent.bind(null, evt)
+  let cron = evt.cron ?
+    evt.cron :
+    new Date(evt.when)
+
+  let cb = this._onEvent.bind(null, evt)
     , job = schedule.scheduleJob(cron, cb)
 
   this.jobs[evt.id] = job
@@ -66,14 +69,18 @@ Scheduler.prototype._onEvent = function(evt) {
     return yield request(evt.url)
   }
 
-  let saveHistory = function* (res) {
+  let saveHistory = function(res) {
     res = _.result(res, 'statusCode', 'body', 'headers')
+
     let login = 'rafaeljesus'
       , history = _.extend(res, {
         event: evt.id
         , url: evt.url
       })
-    yield History.create(login, history)
+
+    return co(function* () {
+      return yield History.create(login, history)
+    })
   }
 
   let onFulfilled = function(res) {

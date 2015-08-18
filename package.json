@@ -55,7 +55,7 @@
     "Jobs"
   ],
   "engines": {
-    "iojs": "0.4.0"
+    "iojs": "3.0.0"
   },
   "author": "Rafael Jesus <rafaelljesus86@gmail.com>",
   "license": "ISC"

@@ -37,7 +37,7 @@ describe('UserModel', function() {
 
   describe('#auth', function() {
 
-    before(function* (done) {
+    beforeEach(function* (done) {
       try {
         yield User.create(login, password)
         done()
@@ -59,7 +59,7 @@ describe('UserModel', function() {
 
   describe('#delete', function() {
 
-    before(function* (done) {
+    beforeEach(function* (done) {
       try {
         yield User.create(login, password)
         done()

@@ -1,8 +1,8 @@
 'use strict'
 
-const redis = require('../../lib/redis')
-  , crypto  = require('crypto')
-  , name    = 'users'
+const crypto  = require('crypto')
+  , redis     = require('../../lib/redis')
+  , name      = 'users'
 
 exports.create = function* (login, password) {
   password = hashDigest.call(null, password)
@@ -29,7 +29,12 @@ exports.auth = function* (login, password) {
 exports.delete = function* (login, password) {
   password = hashDigest.call(null, password)
   let key = name + ':' + login + ':' + password
-  return yield redis.del(key)
+
+  try {
+    return yield redis.del(key)
+  } catch(err) {
+    throw err
+  }
 }
 
 function hashDigest(password) {

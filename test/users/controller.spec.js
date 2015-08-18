@@ -43,7 +43,7 @@ describe('UserControllerSpec', function() {
 
   describe('DELETE /v1/users', function() {
 
-    before(function* (done) {
+    beforeEach(function* (done) {
       try {
         yield User.create(login, password)
         done()

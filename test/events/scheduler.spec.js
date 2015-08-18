@@ -6,14 +6,13 @@ const chai      = require('chai')
   , sinonChai   = require('sinon-chai')
   , schedule    = require('node-schedule')
   , expect      = chai.expect
-  , redis       = require('../../lib/redis-sub')
   , Event       = require('../../api/events/model')
   , scheduler   = require('../../api/events/scheduler')
 
 chai.use(sinonChai)
 require('co-mocha')(mocha)
 
-describe('SchedulerSpec', function() {
+describe.skip('SchedulerSpec', function() {
 
   let fixture = require('./fixture')().event1
   fixture.id = 1

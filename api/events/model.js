@@ -1,47 +1,19 @@
 'use strict'
 
-const _       = require('lodash')
-  , uuid      = require('node-uuid')
-  , emitter   = require('./emitter')
-  , redis     = require('../../lib/redis')
-  , name      = 'events'
+const _     = require('lodash')
+  , uuid    = require('node-uuid')
+  , redis   = require('../../lib/redis')
+  , name    = 'events'
 
 exports.findAll = function* () {
-  let replied = false
-  let done = function(err, res) {
-    redis.quit()
-    if (!replied) {
-      if (!err && !res) {
-        err = new Error('Conflict detected')
-      }
-      replied = true
-      return res
-    }
-  }
-
-  redis.once('error', done)
-  redis.watch(name)
-
-  try {
-    let res = yield redis
-      .multi()
-      .hgetall(name)
-      .exec()
-    return done(null, res)
-  } catch(err) {
-    done(err)
-  }
+  return yield redis.hgetall(name)
 }
 
 exports.find = function* (login) {
   let key = name + ':' + login
     , evts = yield redis.lrange(key, 0, -1)
 
-  try {
-    return evts.map(JSON.parse)
-  } catch(err) {
-    throw err
-  }
+  return evts.map(JSON.parse)
 }
 
 exports.get = function* (login, id) {
@@ -91,39 +63,33 @@ exports.delete = function* (login, id) {
     return yield [
       redis.del(name),
       redis.del(key),
-      redis.del(key + ':' + id)
+      redis.del(key + ':' + id),
+      redis.publish('schedule:' + action, JSON.stringify({
+        action: action,
+        body: evt
+      }))
     ]
   }
 
   try {
     let evt = yield this.get(login, id)
-      , payload = {action: action, body: evt}
-      , res = yield del(evt)
-
-    emitter.emit('schedule:' + action, payload)
-    return res
+    return yield del(evt)
   } catch(err) {
     throw err
   }
 }
 
 function* saveAndReturn(action, key, evt, login) {
-  let payload = {
-    action: action,
-    body: evt
-  }
-
-  let save = function* () {
-    return yield [
+  try {
+    yield [
       redis.hmset(name, evt),
       redis.hmset(key + ':' + evt.id, evt),
-      redis.lpush(key, JSON.stringify(evt))
+      redis.lpush(key, JSON.stringify(evt)),
+      redis.publish('schedule:' + action, JSON.stringify({
+        action: action,
+        body: evt
+      }))
     ]
-  }
-
-  try {
-    yield save()
-    emitter.emit('schedule:' + action, payload)
     return yield this.get(login, evt.id)
   } catch(err) {
     throw err

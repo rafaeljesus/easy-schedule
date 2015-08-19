@@ -4,15 +4,16 @@ const co        = require('co')
   , request     = require('co-request')
   , _           = require('lodash')
   , schedule    = require('node-schedule')
+  , log         = require('../../lib/log')
   , Event       = require('../events/model')
   , History     = require('../history/model')
 
-let Scheduler = function(emitter) {
-  if (!(this instanceof Scheduler)) return new Scheduler(emitter)
-  _.bindAll(this, 'handleMessage');
-  emitter.on('schedule:created', this.handleMessage)
-  emitter.on('schedule:updated', this.handleMessage)
-  emitter.on('schedule:deleted', this.handleMessage)
+let Scheduler = function(redis) {
+  if (!(this instanceof Scheduler)) return new Scheduler(redis)
+  redis.subscribe('schedule:created')
+  redis.subscribe('schedule:updated')
+  redis.subscribe('schedule:deleted')
+  redis.on('message', this.handleMessage.bind(this))
   this.jobs = {}
   this.start()
 }
@@ -30,7 +31,7 @@ Scheduler.prototype.start = function() {
   }
 
   let onRejected = function(err) {
-    console.log('Scheduler start failed', err)
+    log.error('Scheduler start failed', err)
   }
 
   return co(findAll)
@@ -38,8 +39,9 @@ Scheduler.prototype.start = function() {
     .catch(onRejected)
 }
 
-Scheduler.prototype.handleMessage = function(payload) {
-  let evt = payload.body
+Scheduler.prototype.handleMessage = function(channel, message) {
+  let payload = JSON.parse(message)
+    , evt = payload.body
     , action = payload.action
 
   if (action === 'created') {
@@ -82,11 +84,11 @@ Scheduler.prototype._onEvent = function(evt) {
   }
 
   let onFulfilled = function(res) {
-    console.log('succesfully sent cron job request', res)
+    log.info('succesfully sent cron job request', res)
   }
 
   let onRejected = function(err) {
-    console.log('failed to send cron job request', err)
+    log.error('failed to send cron job request', err)
   }
 
   return co(callHttp)

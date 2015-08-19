@@ -1,20 +1,20 @@
 'use strict'
 
-const koa         = require('koa')
-  , mount         = require('koa-mount')
-  , koaBody       = require('koa-body')
-  , logger        = require('koa-logger')
-  , compress      = require('koa-compress')
-  , limit         = require('koa-better-ratelimit')
-  , cors          = require('kcors')
-  , auth          = require('./middlewares/auth')
-  , emitter       = require('./api/events/emitter')
-  , scheduler     = require('./api/events/scheduler')
-  , APIhome       = require('./api/home/routes')
-  , APIusers      = require('./api/users/routes')
-  , APIevents     = require('./api/events/routes')
-  , APIhistory    = require('./api/history/routes')
-  , app           = koa()
+const koa       = require('koa')
+  , mount       = require('koa-mount')
+  , koaBody     = require('koa-body')
+  , logger      = require('koa-logger')
+  , compress    = require('koa-compress')
+  , limit       = require('koa-better-ratelimit')
+  , cors        = require('kcors')
+  , auth        = require('./middlewares/auth')
+  , redisSub    = require('./lib/redis-sub')
+  , scheduler   = require('./api/events/scheduler')
+  , APIhome     = require('./api/home/routes')
+  , APIusers    = require('./api/users/routes')
+  , APIevents   = require('./api/events/routes')
+  , APIhistory  = require('./api/history/routes')
+  , app         = koa()
 
 let compressOpts = {
   filter: function(contentType) {
@@ -41,7 +41,7 @@ let handleErr = function* (next) {
   }
 }
 
-scheduler.use(emitter)
+scheduler.use(redisSub)
 
 app.use(compress(compressOpts))
 app.use(limit(limitOpts))

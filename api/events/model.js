@@ -6,14 +6,40 @@ const _     = require('lodash')
   , name    = 'events'
 
 exports.findAll = function* () {
-  return yield redis.hgetall(name)
+  let replied = false
+  let done = function(err, res) {
+    if (!replied) {
+      if (!err && !res) {
+        err = new Error('Conflict detected')
+      }
+      replied = true
+      return res
+    }
+  }
+
+  redis.once('error', done)
+  redis.watch(name)
+
+  try {
+    let res = yield redis
+    .multi()
+    .hgetall(name)
+    .exec()
+    return done(null, res)
+  } catch(err) {
+    done(err)
+  }
 }
 
 exports.find = function* (login) {
   let key = name + ':' + login
     , evts = yield redis.lrange(key, 0, -1)
 
-  return evts.map(JSON.parse)
+  try {
+    return evts.map(JSON.parse)
+  } catch(err) {
+    throw err
+  }
 }
 
 exports.get = function* (login, id) {

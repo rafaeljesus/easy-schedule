@@ -25,7 +25,7 @@ Scheduler.prototype.start = function() {
   }
 
   let onFulfilled = function(res) {
-    if (!res) return
+    if (!res || _.isNull(_.first(res))) return
     if (_.isPlainObject(res)) res = [res]
     res.map(_this._schedule, _this)
   }
@@ -79,7 +79,8 @@ Scheduler.prototype._onEvent = function(evt) {
       })
 
     return co(function* () {
-      return yield History.create(login, history)
+      yield History.create(login, history)
+      return res
     })
   }
 

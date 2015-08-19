@@ -24,13 +24,39 @@ describe('EventModel', function() {
     }
   })
 
+  describe('#findAll', function() {
+
+    let fixture = require('./fixture')()
+      , evt1 = fixture.event1
+
+    beforeEach(function* (done) {
+      try {
+        yield Event.create(acckey, evt1)
+        done()
+      } catch(err) {
+        done(err)
+      }
+    })
+
+    it('should find all events', function* (done) {
+      try {
+        let evts = yield Event.findAll()
+        expect(evts.length).to.be.equal(1)
+        expect(evts[0].id).to.not.be.empty
+        done()
+      } catch(err) {
+        done(err)
+      }
+    })
+  })
+
   describe('#find', function() {
 
     let fixture = require('./fixture')()
       , evt1 = fixture.event1
       , evt2 = fixture.event2
 
-    before(function *(done) {
+    beforeEach(function* (done) {
       try {
         yield [
           Event.create(acckey, evt1),
@@ -42,7 +68,7 @@ describe('EventModel', function() {
       }
     })
 
-    it('should find all events', function* (done) {
+    it('should find events', function* (done) {
       try {
         let evts = yield Event.find(acckey)
         expect(evts.length).to.be.equal(2)
@@ -60,7 +86,7 @@ describe('EventModel', function() {
     let fixture = require('./fixture')()
       , evt1 = fixture.event1
 
-    before(function *(done) {
+    beforeEach(function *(done) {
       try {
         evt1 = yield Event.create(acckey, evt1)
         done()
@@ -86,7 +112,7 @@ describe('EventModel', function() {
       , fixture = require('./fixture')()
       , evt1 = fixture.event1
 
-    before(function() {
+    beforeEach(function() {
       spy = sinon.spy(redis, 'publish')
     })
 
@@ -112,7 +138,7 @@ describe('EventModel', function() {
       , fixture = require('./fixture')()
       , evt1 = fixture.event1
 
-    before(function* (done) {
+    beforeEach(function* (done) {
       spy = sinon.spy(redis, 'publish')
       evt1 = yield Event.create(acckey, evt1)
       done()
@@ -141,7 +167,7 @@ describe('EventModel', function() {
       , fixture = require('./fixture')()
       , evt1 = fixture.event1
 
-    before(function* (done) {
+    beforeEach(function* (done) {
       spy = sinon.spy(redis, 'publish')
       try {
         evt1 = yield Event.create(acckey, evt1)

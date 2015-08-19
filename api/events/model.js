@@ -37,7 +37,11 @@ exports.find = function* (login) {
   let key = name + ':' + login
     , evts = yield redis.lrange(key, 0, -1)
 
-  return evts.map(JSON.parse)
+  try {
+    return evts.map(JSON.parse)
+  } catch(err) {
+    throw err
+  }
 }
 
 exports.get = function* (login, id) {

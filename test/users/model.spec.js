@@ -22,7 +22,7 @@ describe('UserModel', function() {
     }
   })
 
-  describe('#create', function() {
+  describe('.create', function() {
 
     it('should create a new user', function* (done) {
       try {
@@ -35,7 +35,7 @@ describe('UserModel', function() {
     })
   })
 
-  describe('#auth', function() {
+  describe('.auth', function() {
 
     before(function* (done) {
       try {
@@ -57,7 +57,7 @@ describe('UserModel', function() {
     })
   })
 
-  describe('#delete', function() {
+  describe('.delete', function() {
 
     before(function* (done) {
       try {

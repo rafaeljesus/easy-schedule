@@ -6,29 +6,7 @@ const _     = require('lodash')
   , name    = 'events'
 
 exports.findAll = function* () {
-  let replied = false
-  let done = function(err, res) {
-    if (!replied) {
-      if (!err && !res) {
-        err = new Error('Conflict detected')
-      }
-      replied = true
-      return res
-    }
-  }
-
-  redis.once('error', done)
-  redis.watch(name)
-
-  try {
-    let res = yield redis
-    .multi()
-    .hgetall(name)
-    .exec()
-    return done(null, res)
-  } catch(err) {
-    done(err)
-  }
+  return yield redis.hgetall(name)
 }
 
 exports.find = function* (login) {
@@ -44,7 +22,6 @@ exports.find = function* (login) {
 
 exports.get = function* (login, id) {
   let key = name + ':' + login
-
   return yield redis.hgetall(key + ':' + id)
 }
 
@@ -61,7 +38,7 @@ exports.create = function* (login, evt) {
   let args = [action, key, evt, login]
 
   try {
-    return yield saveAndReturn.apply(this, args)
+    return yield* saveAndReturn.apply(this, args)
   } catch(err) {
     throw err
   }
@@ -73,7 +50,7 @@ exports.update = function* (login, evt) {
     , args = [action, key, evt, login]
 
   try {
-    return yield saveAndReturn.apply(this, args)
+    return yield* saveAndReturn.apply(this, args)
   } catch(err) {
     throw err
   }
@@ -90,10 +67,7 @@ exports.delete = function* (login, id) {
       redis.del(name),
       redis.del(key),
       redis.del(key + ':' + id),
-      redis.publish('schedule:' + action, JSON.stringify({
-        action: action,
-        body: evt
-      }))
+      redis.publish('schedule:' + action, payload.call(null, action, evt))
     ]
   }
 
@@ -105,19 +79,23 @@ exports.delete = function* (login, id) {
   }
 }
 
-function* saveAndReturn(action, key, evt, login) {
+function* saveAndReturn(action, key, evt, login, options) {
   try {
     yield [
       redis.hmset(name, evt),
       redis.hmset(key + ':' + evt.id, evt),
       redis.lpush(key, JSON.stringify(evt)),
-      redis.publish('schedule:' + action, JSON.stringify({
-        action: action,
-        body: evt
-      }))
+      redis.publish('schedule:' + action, payload.call(null, action, evt))
     ]
     return yield this.get(login, evt.id)
   } catch(err) {
     throw err
   }
+}
+
+function payload(action, evt) {
+  return JSON.stringify({
+    action: action,
+    body: evt
+  })
 }

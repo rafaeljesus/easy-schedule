@@ -22,7 +22,7 @@ describe('HistoryModel', function() {
     }
   })
 
-  describe('#find', function() {
+  describe('.find', function() {
 
     before(function *(done) {
       try {
@@ -47,7 +47,7 @@ describe('HistoryModel', function() {
     })
   })
 
-  describe('#create', function() {
+  describe('.create', function() {
 
     it('should create a history event', function* (done) {
       try {

@@ -24,7 +24,7 @@ describe('EventModel', function() {
     }
   })
 
-  describe('#findAll', function() {
+  describe('.findAll', function() {
 
     let fixture = require('./fixture')()
       , evt1 = fixture.event1
@@ -41,8 +41,7 @@ describe('EventModel', function() {
     it('should find all events', function* (done) {
       try {
         let evts = yield Event.findAll()
-        expect(evts.length).to.be.equal(1)
-        expect(evts[0].id).to.not.be.empty
+        expect(evts.id).to.not.be.empty
         done()
       } catch(err) {
         done(err)
@@ -50,7 +49,7 @@ describe('EventModel', function() {
     })
   })
 
-  describe('#find', function() {
+  describe('.find', function() {
 
     let fixture = require('./fixture')()
       , evt1 = fixture.event1
@@ -81,7 +80,7 @@ describe('EventModel', function() {
     })
   })
 
-  describe('#get', function() {
+  describe('.get', function() {
 
     let fixture = require('./fixture')()
       , evt1 = fixture.event1
@@ -106,7 +105,7 @@ describe('EventModel', function() {
     })
   })
 
-  describe('#create', function() {
+  describe('.create', function() {
 
     let spy
       , fixture = require('./fixture')()
@@ -132,7 +131,7 @@ describe('EventModel', function() {
     })
   })
 
-  describe('#update', function() {
+  describe('.update', function() {
 
     let spy
       , fixture = require('./fixture')()
@@ -161,7 +160,7 @@ describe('EventModel', function() {
     })
   })
 
-  describe('#delete', function() {
+  describe('.delete', function() {
 
     let spy
       , fixture = require('./fixture')()

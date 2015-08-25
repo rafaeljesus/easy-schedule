@@ -22,7 +22,7 @@ describe('SchedulerSpec', function() {
     body: fixture
   }
 
-  describe('#use', function() {
+  describe('.use', function() {
 
     let spy
 
@@ -45,7 +45,7 @@ describe('SchedulerSpec', function() {
     })
   })
 
-  describe('#start', function() {
+  describe('.start', function() {
 
     let sch
       , findAllStub
@@ -74,7 +74,7 @@ describe('SchedulerSpec', function() {
     })
   })
 
-  describe('#handleMessage', function() {
+  describe('.handleMessage', function() {
 
     let channel = {}
       , spy
@@ -93,7 +93,7 @@ describe('SchedulerSpec', function() {
         let sch = scheduler(redis)
         sch.handleMessage(channel, JSON.stringify(message))
         expect(spy).to.have.been.calledWith(fixture.cron)
-        expect(sch.jobs).to.not.be.empty
+        expect(sch.runningJobs).to.not.be.empty
       })
     })
 
@@ -107,7 +107,7 @@ describe('SchedulerSpec', function() {
         sch = scheduler(redis)
         message.action = 'updated'
         sch._schedule(message.body)
-        cancelSpy = sinon.spy(sch.jobs[message.body.id], 'cancel')
+        cancelSpy = sinon.spy(sch.runningJobs[message.body.id], 'cancel')
         _scheduleSpy = sinon.spy(sch, '_schedule')
       })
 
@@ -120,7 +120,7 @@ describe('SchedulerSpec', function() {
         sch.handleMessage(channel, JSON.stringify(message))
         expect(cancelSpy).to.have.been.called
         expect(_scheduleSpy).to.have.been.called
-        expect(sch.jobs).to.not.be.empty
+        expect(sch.runningJobs).to.not.be.empty
       })
     })
 
@@ -133,7 +133,7 @@ describe('SchedulerSpec', function() {
         sch = scheduler(redis)
         message.action = 'deleted'
         sch._schedule(message.body)
-        cancelSpy = sinon.spy(sch.jobs[message.body.id], 'cancel')
+        cancelSpy = sinon.spy(sch.runningJobs[message.body.id], 'cancel')
       })
 
       after(function() {
@@ -147,7 +147,7 @@ describe('SchedulerSpec', function() {
     })
   })
 
-  describe('#_schedule', function() {
+  describe('._schedule', function() {
 
     let sch, spy
 
@@ -163,11 +163,11 @@ describe('SchedulerSpec', function() {
       spy = sinon.spy(schedule, 'scheduleJob')
       sch._schedule(message.body)
       expect(spy).to.have.been.calledWith(message.body.cron)
-      expect(sch.jobs).to.not.be.empty
+      expect(sch.runningJobs).to.not.be.empty
     })
   })
 
-  describe('#_onEvent', function() {
+  describe('._onEvent', function() {
 
     let httpMock
       , nock = require('nock')

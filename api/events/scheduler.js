@@ -3,6 +3,7 @@
 const co        = require('co')
   , request     = require('co-request')
   , _           = require('lodash')
+  , cluster     = require('cluster')
   , schedule    = require('node-schedule')
   , log         = require('../../lib/log')
   , Event       = require('../events/model')
@@ -14,29 +15,22 @@ let Scheduler = function(redis) {
   redis.subscribe('schedule:updated')
   redis.subscribe('schedule:deleted')
   redis.on('message', this.handleMessage.bind(this))
-  this.jobs = {}
-  this.start()
+  this.runningJobs = {}
+  if (cluster.worker && cluster.worker.id === 1) {
+    this.start()
+  }
 }
 
 Scheduler.prototype.start = function() {
   let _this = this
-  let findAll = function* () {
-    return yield Event.findAll()
-  }
-
-  let onFulfilled = function(res) {
+  return co(function* () {
+    let res = yield Event.findAll()
     if (!res || _.isNull(_.first(res))) return
     if (_.isPlainObject(res)) res = [res]
     res.map(_this._schedule, _this)
-  }
-
-  let onRejected = function(err) {
-    log.error('Scheduler start failed', err)
-  }
-
-  return co(findAll)
-    .then(onFulfilled)
-    .catch(onRejected)
+  }).catch(function(err) {
+    log.error('scheduler start failed', err)
+  })
 }
 
 Scheduler.prototype.handleMessage = function(channel, message) {
@@ -47,55 +41,41 @@ Scheduler.prototype.handleMessage = function(channel, message) {
   if (action === 'created') {
     this._schedule(evt)
   } else {
-    this.jobs[evt.id].cancel()
-    delete this.jobs[evt.id]
+    let job = this.runningJobs[evt.id]
+    if (job) {
+      job.cancel()
+      job = undefined
+    }
     if (action === 'updated') this._schedule(evt)
   }
 }
 
 Scheduler.prototype._schedule = function(evt) {
-  let cron = evt.cron ?
-    evt.cron :
-    new Date(evt.when)
-
-  let cb = this._onEvent.bind(null, evt)
+  let cron = evt.cron ? evt.cron : new Date(evt.when)
+    , cb = this._onEvent.bind(this, evt)
     , job = schedule.scheduleJob(cron, cb)
 
-  this.jobs[evt.id] = job
+  this.runningJobs[evt.id] = job
+  log.info('succesfully scheduled job', evt)
 }
 
 Scheduler.prototype._onEvent = function(evt) {
-  let callHttp = function* () {
-    return yield request(evt.url)
-  }
-
-  let saveHistory = function(res) {
+  return co(function* () {
+    let res = yield request(evt.url)
     res = _.result(res, 'statusCode', 'body', 'headers')
+    log.info('succesfully sent cron job request', res)
 
     let login = 'rafaeljesus'
-      , history = _.extend(res, {
+      , history = _.assign(res, {
         event: evt.id
         , url: evt.url
       })
 
-    return co(function* () {
-      yield History.create(login, history)
-      return res
-    })
-  }
-
-  let onFulfilled = function(res) {
-    log.info('succesfully sent cron job request', res)
-  }
-
-  let onRejected = function(err) {
+    yield History.create(login, history)
+  })
+  .catch(function(err) {
     log.error('failed to send cron job request', err)
-  }
-
-  return co(callHttp)
-    .then(saveHistory)
-    .then(onFulfilled)
-    .catch(onRejected)
+  })
 }
 
 Scheduler.use = function() {

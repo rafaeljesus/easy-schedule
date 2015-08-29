@@ -21,9 +21,9 @@ exports.create = function* (next) {
 
 exports.update = function* (next) {
   let login = this.user.login
-    , event = _.assign(this.request.body, {
-        id: this.params.id
-      })
+    , body = this.request.body
+    , id = this.params.id
+    , event = _.assign(body, {id: id})
 
   try {
     this.body = yield Event.update(login, event)

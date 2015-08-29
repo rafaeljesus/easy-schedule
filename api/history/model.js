@@ -5,17 +5,25 @@ const redis = require('../../lib/redis')
 
 exports.find = function* (login) {
   let key = name + ':' + login
-    , evts = yield redis.lrange(key, 0, -1)
 
-  return evts.map(JSON.parse)
+  try {
+    let evts = yield redis.lrange(key, 0, -1)
+    return evts.map(JSON.parse)
+  } catch(err) {
+    throw err
+  }
 }
 
 exports.create = function* (login, data) {
   let key = name + ':' + login
 
   try {
-    return yield redis.lpush(key, JSON.stringify(data))
+    return yield redis.lpush(key, stringify(data))
   } catch(err) {
     throw err
   }
+}
+
+function stringify(data) {
+  return JSON.stringify(data);
 }

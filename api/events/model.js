@@ -73,7 +73,7 @@ exports.delete = function* (login, id) {
 
   try {
     let evt = yield this.get(login, id)
-    return yield del(evt)
+    return yield* del(evt)
   } catch(err) {
     throw err
   }
@@ -87,7 +87,7 @@ function* saveAndReturn(action, key, evt, login, options) {
       redis.lpush(key, JSON.stringify(evt)),
       redis.publish('schedule:' + action, payload.call(null, action, evt))
     ]
-    return yield this.get(login, evt.id)
+    return yield* this.get(login, evt.id)
   } catch(err) {
     throw err
   }

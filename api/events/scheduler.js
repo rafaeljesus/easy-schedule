@@ -16,6 +16,7 @@ let Scheduler = function(redis) {
   redis.subscribe('schedule:deleted')
   redis.on('message', this.handleMessage.bind(this))
   this.runningJobs = {}
+
   if (cluster.worker && cluster.worker.id === 1) {
     this.start()
   }
@@ -51,7 +52,10 @@ Scheduler.prototype.handleMessage = function(channel, message) {
 }
 
 Scheduler.prototype._schedule = function(evt) {
-  let cron = evt.cron ? evt.cron : new Date(evt.when)
+  let cron = evt.cron
+    ? evt.cron
+    : new Date(evt.when)
+
     , cb = this._onEvent.bind(this, evt)
     , job = schedule.scheduleJob(cron, cb)
 

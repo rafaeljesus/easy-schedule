@@ -6,10 +6,30 @@ Easy Schedule handles job scheduling for your application by storing and managin
 At the appropriate time, Easy Schedule calls back to your application at the provided URL to signal that some work must be completed.
 
 ## Built with
-
 - [iojs](https://iojs.org) &mdash; Back end is a iojs.
 - [koa](http://koajs.com) &mdash; API is a KOA app. It respond to requests RESTfully in JSON.
 - [Redis](http://redis.io) &mdash; Redis as a data store and message queue events.
+
+## API
+
+#### Users
+(POST /v1/users) create a user account
+
+(DELETE /v1/users) delete a user account
+
+#### Events
+(GET /v1/events) list all events from user
+
+(GET /v1/events/:id) find a event by id
+
+(POST /v1/events) create a event
+
+(PUT /v1/events/:id) update a event by id
+
+(DELETE /v1/events/:id) delete a event by id
+
+#### History
+(GET /v1/history) list all history events from user
 
 ## Contributing
 - Fork it

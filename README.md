@@ -11,6 +11,13 @@ At the appropriate time, Easy Schedule calls back to your application at the pro
 - [koa](http://koajs.com) &mdash; API is a KOA app. It respond to requests RESTfully in JSON.
 - [Redis](http://redis.io) &mdash; Redis as a data store and message queue events.
 
+## Contributing
+- Fork it
+- Create your feature branch (`git checkout -b my-new-feature`)
+- Commit your changes (`git commit -am 'Add some feature'`)
+- Push to the branch (`git push origin my-new-feature`)
+- Create new Pull Request
+
 ## Maintaners
 
 * [Rafael Jesus](https://github.com/rafaeljesus)

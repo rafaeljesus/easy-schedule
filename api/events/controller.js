@@ -5,7 +5,12 @@ const _   = require('lodash')
 
 exports.index = function* (next) {
   let login = this.user.login
-  this.body = yield Event.find(login)
+
+  try {
+    this.body = yield Event.find(login)
+  } catch(err) {
+    this.throw(500, err)
+  }
 }
 
 exports.create = function* (next) {
@@ -39,6 +44,7 @@ exports.show = function* (next) {
   try {
     this.body = yield Event.get(login, id)
   } catch(err) {
+    console.log(err)
     this.throw(500, err)
   }
 }

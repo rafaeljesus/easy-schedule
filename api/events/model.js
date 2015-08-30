@@ -13,11 +13,7 @@ exports.find = function* (login) {
   let key = name + ':' + login
     , evts = yield redis.lrange(key, 0, -1)
 
-  try {
-    return evts.map(JSON.parse)
-  } catch(err) {
-    throw err
-  }
+  return evts.map(JSON.parse)
 }
 
 exports.get = function* (login, id) {
@@ -37,11 +33,7 @@ exports.create = function* (login, evt) {
 
   let args = [action, key, evt, login]
 
-  try {
-    return yield* saveAndReturn.apply(this, args)
-  } catch(err) {
-    throw err
-  }
+  return yield* saveAndReturn.apply(this, args)
 }
 
 exports.update = function* (login, evt) {
@@ -49,11 +41,7 @@ exports.update = function* (login, evt) {
     , action = 'updated'
     , args = [action, key, evt, login]
 
-  try {
-    return yield* saveAndReturn.apply(this, args)
-  } catch(err) {
-    throw err
-  }
+  return yield* saveAndReturn.apply(this, args)
 }
 
 exports.delete = function* (login, id) {
@@ -71,26 +59,18 @@ exports.delete = function* (login, id) {
     ]
   }
 
-  try {
-    let evt = yield this.get(login, id)
-    return yield* del(evt)
-  } catch(err) {
-    throw err
-  }
+  let evt = yield this.get(login, id)
+  return yield* del(evt)
 }
 
 function* saveAndReturn(action, key, evt, login, options) {
-  try {
-    yield [
-      redis.hmset(name, evt),
-      redis.hmset(key + ':' + evt.id, evt),
-      redis.lpush(key, JSON.stringify(evt)),
-      redis.publish('schedule:' + action, payload.call(null, action, evt))
-    ]
-    return yield* this.get(login, evt.id)
-  } catch(err) {
-    throw err
-  }
+  yield [
+    redis.hmset(name, evt),
+    redis.hmset(key + ':' + evt.id, evt),
+    redis.lpush(key, JSON.stringify(evt)),
+    redis.publish('schedule:' + action, payload.call(null, action, evt))
+  ]
+  return yield* this.get(login, evt.id)
 }
 
 function payload(action, evt) {

@@ -3,43 +3,41 @@
 const _     = require('lodash')
   , uuid    = require('node-uuid')
   , redis   = require('../../lib/redis')
-  , name    = 'events'
+  , C       = require('../../lib/constants')
 
 exports.findAll = function* () {
-  return yield redis.hgetall(name)
+  return yield redis.hgetall(C.EVENTS)
 }
 
 exports.find = function* (login) {
-  let key = name + ':' + login
+  let key = C.EVENTS + ':' + login
     , evts = yield redis.lrange(key, 0, -1)
 
   return evts.map(JSON.parse)
 }
 
 exports.get = function* (login, id) {
-  let key = name + ':' + login
+  let key = C.EVENTS + ':' + login
   return yield redis.hgetall(key + ':' + id)
 }
 
 exports.create = function* (login, evt) {
-  let key = name + ':' + login
-    , action = 'created'
+  let key = C.EVENTS + ':' + login
     , id = uuid.v1()
 
   evt = _.assign(evt, {
     id: id,
-    status: 'active'
+    status: C.ACTIVE
   })
 
-  let args = [action, key, evt, login]
+  let args = [C.CREATED, key, evt, login]
 
   return yield* saveAndReturn.apply(this, args)
 }
 
 exports.update = function* (login, evt) {
-  let key = name + ':' + login
-    , action = 'updated'
-    , args = [action, key, evt, login]
+  let key = C.EVENTS + ':' + login
+    , args = [C.UPDATED, key, evt, login]
 
   return yield* saveAndReturn.apply(this, args)
 }
@@ -47,15 +45,13 @@ exports.update = function* (login, evt) {
 exports.delete = function* (login, id) {
   id || (id = 0)
 
-  let action = 'deleted'
-    , key = name + ':' + login
-
+  let key = C.EVENTS + ':' + login
   let del = function* (evt) {
     return yield [
-      redis.del(name),
+      redis.del(C.EVENTS),
       redis.del(key),
       redis.del(key + ':' + id),
-      redis.publish('schedule:' + action, payload.call(null, action, evt))
+      redis.publish('schedule:' + C.DELETED, payload.call(null, C.DELETED, evt))
     ]
   }
 
@@ -65,7 +61,7 @@ exports.delete = function* (login, id) {
 
 function* saveAndReturn(action, key, evt, login, options) {
   yield [
-    redis.hmset(name, evt),
+    redis.hmset(C.EVENTS, evt),
     redis.hmset(key + ':' + evt.id, evt),
     redis.lpush(key, JSON.stringify(evt)),
     redis.publish('schedule:' + action, payload.call(null, action, evt))

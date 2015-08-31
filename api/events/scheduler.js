@@ -6,20 +6,21 @@ const co        = require('co')
   , cluster     = require('cluster')
   , schedule    = require('node-schedule')
   , log         = require('../../lib/log')
+  , C           = require('../../lib/constants')
   , Event       = require('../events/model')
   , History     = require('../history/model')
 
 let Scheduler = function(redis) {
   if (!(this instanceof Scheduler)) return new Scheduler(redis)
+  this.runningJobs = {}
   redis.subscribe('schedule:created')
   redis.subscribe('schedule:updated')
   redis.subscribe('schedule:deleted')
   redis.on('message', this.handleMessage.bind(this))
-  this.runningJobs = {}
 
-  if (cluster.worker && cluster.worker.id === 1) {
-    this.start()
-  }
+  let isFirstWorker = cluster.worker && cluster.worker.id === 1
+
+  if (isFirstWorker) this.start()
 }
 
 Scheduler.prototype.start = function() {
@@ -39,7 +40,7 @@ Scheduler.prototype.handleMessage = function(channel, message) {
     , evt = payload.body
     , action = payload.action
 
-  if (action === 'created') {
+  if (action === C.CREATED) {
     this._schedule(evt)
   } else {
     let job = this.runningJobs[evt.id]
@@ -47,7 +48,7 @@ Scheduler.prototype.handleMessage = function(channel, message) {
       job.cancel()
       job = undefined
     }
-    if (action === 'updated') this._schedule(evt)
+    if (action === C.UPDATED) this._schedule(evt)
   }
 }
 
@@ -66,7 +67,7 @@ Scheduler.prototype._onEvent = function(evt) {
     res = _.result(res, 'statusCode', 'body', 'headers')
     log.info('succesfully sent cron job request', res)
 
-    let login = 'rafaeljesus'
+    let login = 'rafaeljesus' // TODO get and set user login
       , history = _.assign(res, {
         event: evt.id
         , url: evt.url

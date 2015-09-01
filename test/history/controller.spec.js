@@ -20,8 +20,8 @@ describe('HistoryControllerSpec', function() {
   beforeEach(function* (done) {
     try {
       yield [
-        History.create(login, fixture.history1),
-        History.create(login, fixture.history2),
+        History.create(fixture.history1),
+        History.create(fixture.history2),
         User.create(login, password)
       ]
       done()
@@ -49,7 +49,7 @@ describe('HistoryControllerSpec', function() {
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
           if (err) return done(err)
-          expect(res.body).to.have.length(3)
+          expect(res.body).to.have.length(2)
           done()
         })
     })

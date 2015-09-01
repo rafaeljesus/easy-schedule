@@ -10,7 +10,7 @@ require('co-mocha')(mocha)
 
 describe('HistoryModel', function() {
 
-  let login = 'user-hash'
+  let login = 'rafaeljesus'
   let fixture = require('./fixture')()
 
   afterEach(function* (done) {
@@ -27,8 +27,8 @@ describe('HistoryModel', function() {
     before(function *(done) {
       try {
         yield [
-          History.create(login, fixture.history1),
-          History.create(login, fixture.history2)
+          History.create(fixture.history1),
+          History.create(fixture.history2)
         ]
         done()
       } catch(err) {
@@ -51,7 +51,7 @@ describe('HistoryModel', function() {
 
     it('should create a history event', function* (done) {
       try {
-        let res = yield History.create(login, fixture.history1)
+        let res = yield History.create(fixture.history1)
         expect(res).to.be.eql(1)
         done()
       } catch(err) {

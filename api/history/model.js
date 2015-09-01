@@ -10,8 +10,8 @@ exports.find = function* (login) {
   return evts.map(JSON.parse)
 }
 
-exports.create = function* (login, data) {
-  let key = C.HISTORY + ':' + login
+exports.create = function* (data) {
+  let key = C.HISTORY + ':' + data.login
   return yield redis.lpush(key, stringify(data))
 }
 

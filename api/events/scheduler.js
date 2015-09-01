@@ -17,9 +17,7 @@ let Scheduler = function(redis) {
   redis.subscribe('schedule:updated')
   redis.subscribe('schedule:deleted')
   redis.on('message', this.handleMessage.bind(this))
-
   let isFirstWorker = cluster.worker && cluster.worker.id === 1
-
   if (isFirstWorker) this.start()
 }
 
@@ -64,16 +62,15 @@ Scheduler.prototype._schedule = function(evt) {
 Scheduler.prototype._onEvent = function(evt) {
   return co(function* () {
     let res = yield request(evt.url)
-    res = _.result(res, 'statusCode', 'body', 'headers')
+    res = _.pick(res, 'statusCode', 'body', 'headers')
     log.info('succesfully sent cron job request', res)
 
-    let login = 'rafaeljesus' // TODO get and set user login
-      , history = _.assign(res, {
-        event: evt.id
-        , url: evt.url
-      })
+    yield History.create(_.assign(res, {
+      event: evt.id
+      , login: evt.login
+      , url: evt.url
+    }))
 
-    yield History.create(login, history)
   })
   .catch(function(err) {
     log.error('failed to send cron job request', err)

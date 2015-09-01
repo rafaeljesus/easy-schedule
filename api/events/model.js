@@ -27,7 +27,8 @@ exports.create = function* (login, evt) {
 
   evt = _.assign(evt, {
     id: id,
-    status: C.ACTIVE
+    status: C.ACTIVE,
+    login: login
   })
 
   let args = [C.CREATED, key, evt, login]

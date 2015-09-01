@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "bunyan": "^1.4.0",
-    "bunyan-prettystream": "^0.1.3",
     "co": "^4.6.0",
     "co-body": "^3.0.0",
     "co-redis": "^1.2.1",

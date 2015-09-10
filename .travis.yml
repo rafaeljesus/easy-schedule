@@ -1,16 +1,9 @@
 language: node_js
 node_js:
-  - 'iojs-v2.4.0'
+  - 'iojs-v3.0.0'
 services:
   - redis-server
-addons:
-  code_climate:
-    repo_token: 0af717d08c45d155b504c197597bc7716bfc0d50f82548fafbcc2b43c1e6c97d
 before_script:
   - export PATH="$PATH:$(npm bin)"
 script:
   - npm test
-after_script:
-  - npm install -g codeclimate-test-reporter
-  - codeclimate-test-reporter < coverage/lcov.info
-  # - cat coverage/lcov.info | codeclimate

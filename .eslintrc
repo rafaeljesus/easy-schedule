@@ -1,0 +1,33 @@
+{
+  "env": {
+    "mocha": true,
+      "node": true,
+      "es6": true
+  },
+    "ecmaFeatures": {
+      "arrowFunctions": true,
+      "generators": true,
+      "templateStrings": true,
+      "globalReturn": true,
+    },
+    "rules": {
+      "strict": 0,
+      "semi": 0,
+      "asi": 0,
+      "esnext": 0,
+      "no-undef": 0,
+      "quotes": 0,
+      "eqeqeq": 0,
+      "indent": [2, 2],
+      "no-unused-vars": 0,
+      "camelcase": 0,
+      "no-underscore-dangle": 0,
+      "no-alert": 0,
+      "no-process-exit": 0,
+      "no-shadow": 0,
+      "consistent-return": 0,
+      "no-extra-parens": 1,
+      "no-use-before-define": 0,
+      "no-unused-expressions": 0
+    }
+}

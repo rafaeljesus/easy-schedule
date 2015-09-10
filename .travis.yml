@@ -6,4 +6,5 @@ services:
 before_script:
   - export PATH="$PATH:$(npm bin)"
 script:
+  - npm update
   - npm test

@@ -1,10 +1,9 @@
 language: node_js
 node_js:
-  - 'iojs-v3.0.0'
+  - 'iojs'
 services:
   - redis-server
 before_script:
   - export PATH="$PATH:$(npm bin)"
 script:
-  - npm update
   - npm test

@@ -36,7 +36,7 @@
     "moment": "2.10.3",
     "node-schedule": "^0.2.9",
     "node-uuid": "^1.4.3",
-    "redis": "^0.12.1",
+    "redis": "^1.0.0",
     "request": "^2.60.0"
   },
   "devDependencies": {

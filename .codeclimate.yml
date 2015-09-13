@@ -1,4 +1,6 @@
 languages:
   JavaScript: true
-# exclude_paths:
-# - "foo/bar.rb"
+engines:
+  eslint:
+    enabled: true
+

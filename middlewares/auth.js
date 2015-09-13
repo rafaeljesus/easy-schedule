@@ -2,7 +2,7 @@
 
 const User = require('../api/users/model')
 
-var unauthorized = function* (next) {
+const unauthorized = function* (next) {
   let isCreateUser = this.method === 'POST' &&
     this.path === '/v1/users'
 
@@ -21,9 +21,9 @@ var unauthorized = function* (next) {
   }
 }
 
-var Auth = function() {
+const Auth = function() {
   return function* (next) {
-    var authorization = ((this.get('authorization') || '').split(' ')[1] || '').trim()
+    let authorization = ((this.get('authorization') || '').split(' ')[1] || '').trim()
 
     if (!authorization) {
       return yield* unauthorized.call(this, next)

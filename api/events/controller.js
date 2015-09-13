@@ -3,7 +3,7 @@
 const _   = require('lodash')
   , Event = require('./model')
 
-exports.index = function* (next) {
+exports.index = function* () {
   let login = this.user.login
 
   try {
@@ -13,7 +13,7 @@ exports.index = function* (next) {
   }
 }
 
-exports.create = function* (next) {
+exports.create = function* () {
   let login = this.user.login
     , event = this.request.body
 
@@ -24,7 +24,7 @@ exports.create = function* (next) {
   }
 }
 
-exports.update = function* (next) {
+exports.update = function* () {
   let login = this.user.login
     , body = this.request.body
     , id = this.params.id
@@ -37,7 +37,7 @@ exports.update = function* (next) {
   }
 }
 
-exports.show = function* (next) {
+exports.show = function* () {
   let login = this.user.login
     , id = this.params.id
 
@@ -49,7 +49,7 @@ exports.show = function* (next) {
   }
 }
 
-exports.delete = function* (next) {
+exports.delete = function* () {
   let login = this.user.login
     , id = this.params.id
 

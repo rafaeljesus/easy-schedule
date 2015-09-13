@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 'iojs-v3.3.0'
+  - '4'
 services:
   - redis-server
 before_script:

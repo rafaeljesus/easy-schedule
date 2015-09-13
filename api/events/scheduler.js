@@ -44,7 +44,7 @@ Scheduler.prototype.handleMessage = function(channel, message) {
     let job = this.runningJobs[evt.id]
     if (job) {
       job.cancel()
-      job = undefined
+      job = null
     }
     if (action === C.UPDATED) this._schedule(evt)
   }

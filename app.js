@@ -7,6 +7,7 @@ const koa       = require('koa')
   , compress    = require('koa-compress')
   , limit       = require('koa-better-ratelimit')
   , cors        = require('kcors')
+  , zlib        = require('zlib')
   , auth        = require('./middlewares/auth')
   , redisSub    = require('./lib/redis-sub')
   , scheduler   = require('./api/events/scheduler')
@@ -21,7 +22,7 @@ let compressOpts = {
     return /text/i.test(contentType)
   },
   threshold: 2048,
-  flush: require('zlib').Z_SYNC_FLUSH
+  flush: zlib.Z_SYNC_FLUSH
 }
 
 let limitOpts = {

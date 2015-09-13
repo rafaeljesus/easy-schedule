@@ -2,15 +2,17 @@
   "name": "easy-schedule",
   "version": "0.0.1",
   "description": "Simple and flexible job scheduling for your application",
-  "main": "app.js",
+  "engines": {
+    "node": "4.0.0"
+  },
   "scripts": {
-    "start": "iojs bin/easy.schedule",
-    "test": "NODE_ENV=test npm run lint && npm run coverage",
+    "start": "node bin/easy.schedule",
+    "test": "npm run lint && npm run coverage",
     "lint": "eslint .",
-    "watch:server": "nodemon -q -w api/ -x iojs --stage 0 -- bin/easy.schedule",
+    "watch:server": "nodemon -q -w api/ -x node --stage 0 -- bin/easy.schedule",
     "watch:test": "npm test -- -w",
-    "posttest": "istanbul check-coverage --statements 90 --branches 70 --functions 90 --lines 90",
-    "coverage": "istanbul cover --print both ./node_modules/mocha/bin/_mocha -- test --recursive",
+    "posttest": "istanbul check-coverage --statements 90 --branches 60 --functions 90 --lines 90",
+    "coverage": "NODE_ENV=test istanbul cover -x 'lib/** config/** middlewares/** app.js' --print both ./node_modules/mocha/bin/_mocha -- test --recursive",
     "codeclimate": "CODECLIMATE_REPO_TOKEN=0af717d08c45d155b504c197597bc7716bfc0d50f82548fafbcc2b43c1e codeclimate-test-reporter < coverage/lcov.info"
   },
   "dependencies": {
@@ -21,7 +23,7 @@
     "co-request": "^0.2.1",
     "cron": "^1.0.9",
     "debug": "^2.2.0",
-    "hiredis": "^0.4.0",
+    "hiredis": "^0.4.1",
     "kcors": "^1.0.1",
     "koa": "^0.21.0",
     "koa-better-ratelimit": "^2.1.2",
@@ -56,9 +58,6 @@
     "Job",
     "Jobs"
   ],
-  "engines": {
-    "iojs": "3.0.0"
-  },
   "author": "Rafael Jesus <rafaelljesus86@gmail.com>",
   "license": "ISC"
 }

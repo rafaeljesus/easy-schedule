@@ -60,7 +60,7 @@ exports.delete = function* (login, id) {
   return yield* del(evt)
 }
 
-function* saveAndReturn(action, key, evt, login, options) {
+function* saveAndReturn(action, key, evt, login) {
   yield [
     redis.hmset(C.EVENTS, evt),
     redis.hmset(key + ':' + evt.id, evt),

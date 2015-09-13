@@ -2,7 +2,7 @@
 
 const User  = require('./model')
 
-exports.create = function* (next) {
+exports.create = function* () {
   let login = this.request.body.login
     , password = this.request.body.password
 
@@ -16,7 +16,7 @@ exports.create = function* (next) {
   }
 }
 
-exports.delete = function* (next) {
+exports.delete = function* () {
   let login = this.user.login
     , password = this.user.password
 

@@ -3,8 +3,8 @@
 [![Node version](https://img.shields.io/node/v/latest-version.svg?style=flat-square)](https://npmjs.org/package/easy-schedule)
 [![Build Status](https://img.shields.io/travis/rafaeljesus/easy-schedule/master.svg?style=flat-square
 )](https://travis-ci.org/rafaeljesus/easy-schedule)
-[![Code Climate](https://codeclimate.com/github/rafaeljesus/easy-schedule/badges/gpa.svg?style=flat-square)](https://codeclimate.com/github/rafaeljesus/easy-schedule)
-[![Test Coverage](https://codeclimate.com/github/rafaeljesus/easy-schedule/badges/coverage.svg?style=flat-square)](https://codeclimate.com/github/rafaeljesus/easy-schedule/coverage)
+[![Code Climate](https://img.shields.io/codeclimate/github/rafaeljesus/easy-schedule.svg?style=flat-square)](https://codeclimate.com/github/rafaeljesus/easy-schedule)
+[![Test Coverage](https://img.shields.io/codeclimate/coverage/github/rafaeljesus/easy-schedule.svg)](https://codeclimate.com/github/rafaeljesus/easy-schedule/coverage)
 [![license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/rafaeljesus/easy-schedule/blob/master/LICENSE)
 
 Easy Schedule handles job scheduling for your application by storing and managing events that correspond to actions that your application intends to execute in the future.

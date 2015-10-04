@@ -11,122 +11,114 @@ const chai      = require('chai')
 chai.use(sinonChai)
 require('co-mocha')(mocha)
 
-describe('EventModel', function() {
+describe('EventModel', () => {
 
   let acckey = 'user-hash'
 
-  afterEach(function *(done) {
+  afterEach(function* () {
     try {
       yield redis.flushdb()
-      done()
     } catch(err) {
-      done(err)
+      expect(err).to.not.be.ok
     }
   })
 
-  describe('.findAll', function() {
+  describe('.findAll', () => {
 
     let fixture = require('./fixture')()
       , evt1 = fixture.event1
 
-    beforeEach(function* (done) {
+    beforeEach(function* () {
       try {
         yield Event.create(acckey, evt1)
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
 
-    it('should find all events', function* (done) {
+    it('should find all events', function* () {
       try {
         let evts = yield Event.findAll()
         expect(evts.id).to.not.be.empty
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
   })
 
-  describe('.find', function() {
+  describe('.find', () => {
 
     let fixture = require('./fixture')()
       , evt1 = fixture.event1
       , evt2 = fixture.event2
 
-    beforeEach(function* (done) {
+    beforeEach(function* () {
       try {
         yield [
           Event.create(acckey, evt1),
           Event.create(acckey, evt2)
         ]
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
 
-    it('should find events', function* (done) {
+    it('should find events', function* () {
       try {
         let evts = yield Event.find(acckey)
         expect(evts.length).to.be.equal(2)
         expect(evts[0].id).to.not.be.empty
         expect(evts[1].id).to.not.be.empty
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
   })
 
-  describe('.get', function() {
+  describe('.get', () => {
 
     let fixture = require('./fixture')()
       , evt1 = fixture.event1
 
-    beforeEach(function *(done) {
+    beforeEach(function* () {
       try {
         evt1 = yield Event.create(acckey, evt1)
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
 
-    it('should get a event by id', function* (done) {
+    it('should get a event by id', function* () {
       try {
         let evt = yield Event.get(acckey, evt1.id)
         expect(evt.url).to.be.equal(evt1.url)
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
   })
 
-  describe('.create', function() {
+  describe('.create', () => {
 
     let spy
       , fixture = require('./fixture')()
       , evt1 = fixture.event1
 
-    beforeEach(function() {
+    beforeEach(() => {
       spy = sinon.spy(redis, 'publish')
     })
 
-    after(function* () {
+    after(() => {
       spy.restore()
     })
 
-    it('should create a event and publish schedule:created', function* (done) {
+    it('should create a event and publish schedule:created', function* () {
       try {
         evt1 = yield Event.create(acckey, evt1)
         expect(evt1.id).to.not.be.empty
         expect(spy).to.have.been.calledWith('schedule:created')
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
   })
@@ -137,53 +129,49 @@ describe('EventModel', function() {
       , fixture = require('./fixture')()
       , evt1 = fixture.event1
 
-    beforeEach(function* (done) {
+    beforeEach(function* () {
       spy = sinon.spy(redis, 'publish')
       evt1 = yield Event.create(acckey, evt1)
-      done()
     })
 
-    after(function *() {
+    after(() => {
       spy.restore()
     })
 
-    it('should update a event and publish schedule:updated', function* (done) {
+    it('should update a event and publish schedule:updated', function* () {
       evt1.url = 'https://example2.com'
       try {
         let evt = yield Event.update(acckey, evt1)
         expect(evt.url).to.be.equal(evt1.url)
         expect(spy).to.have.been.calledWith('schedule:updated')
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
   })
 
-  describe('.delete', function() {
+  describe('.delete', () => {
 
     let spy
       , fixture = require('./fixture')()
       , evt1 = fixture.event1
 
-    beforeEach(function* (done) {
+    beforeEach(function* () {
       spy = sinon.spy(redis, 'publish')
       try {
         evt1 = yield Event.create(acckey, evt1)
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
 
-    it('should delete a event and publish schedule:deleted', function* (done) {
+    it('should delete a event and publish schedule:deleted', function* () {
       try {
         let res = yield Event.delete(acckey, evt1.id)
         expect(res).to.have.length(4)
         expect(spy).to.have.been.calledWith('schedule:deleted')
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
   })

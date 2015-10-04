@@ -28,9 +28,7 @@ Scheduler.prototype.start = function() {
     if (!res || _.isNull(_.first(res))) return
     if (_.isPlainObject(res)) res = [res]
     res.map(_this._schedule, _this)
-  }).catch(function(err) {
-    log.error('scheduler start failed', err)
-  })
+  }).catch(err => log.error('scheduler start failed', err))
 }
 
 Scheduler.prototype.handleMessage = function(channel, message) {
@@ -72,9 +70,7 @@ Scheduler.prototype._onEvent = function(evt) {
     }))
 
   })
-  .catch(function(err) {
-    log.error('failed to send cron job request', err)
-  })
+  .catch(err => log.error('failed to send cron job request', err))
 }
 
 Scheduler.use = function() {

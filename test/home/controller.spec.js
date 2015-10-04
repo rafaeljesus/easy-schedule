@@ -1,25 +1,25 @@
 'use strict'
 
 const supertest = require('supertest')
+  , expect      = require('chai').expect
   , app         = require('../../app')
   , request     = supertest(app.listen())
   , User        = require('../../api/users/model')
 
-describe('HomeControllerSpec', function() {
+describe('HomeControllerSpec', () => {
 
   let login = 'user-login'
     , password = 'user-password'
 
-  before(function* (done) {
+  before(function* () {
     try {
       yield User.create(login, password)
-      done()
     } catch(err) {
-      done(err)
+      expect(err).to.not.be.ok
     }
   })
 
-  it('should respond 200', function(done) {
+  it('should respond 200', done => {
     request
       .get('/v1')
       .auth(login, password)

@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = function() {
+module.exports = () => {
   return {
     event1: {
       url: 'https://google.com',

@@ -10,29 +10,28 @@ const supertest = require('supertest')
 
 require('co-mocha')(mocha)
 
-describe('UserControllerSpec', function() {
+describe('UserControllerSpec', () => {
 
   let login = 'user-login'
     , password = 'user-password'
 
-  afterEach(function* (done) {
+  afterEach(function* () {
     try {
       yield redis.flushdb()
-      done()
     } catch(err) {
-      done(err)
+      expect(err).to.not.be.ok
     }
   })
 
-  describe('POST /v1/users', function() {
-    it('should create a user', function(done) {
+  describe('POST /v1/users', () => {
+    it('should create a user', done => {
       request
         .post('/v1/users')
         .set('Accept', 'application/json')
         .set('Accept-Encoding', 'gzip')
         .send({login: login, password: password})
         .expect('Content-Type', /json/)
-        .expect(201, function(err, res) {
+        .expect(201, (err, res) => {
           if (err) return done(err)
           expect(res.statusCode).to.be.equal(201)
           expect(res.body.message).to.be.equal('User was successfully created')
@@ -41,25 +40,24 @@ describe('UserControllerSpec', function() {
     })
   })
 
-  describe('DELETE /v1/users', function() {
+  describe('DELETE /v1/users', () => {
 
-    before(function* (done) {
+    before(function* () {
       try {
         yield User.create(login, password)
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
 
-    it('should delete a user', function(done) {
+    it('should delete a user', done => {
       request
         .delete('/v1/users')
         .auth(login, password)
         .set('Accept', 'application/json')
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
-        .expect(200, function(err, res) {
+        .expect(200, (err, res) => {
           if (err) return done(err)
           expect(res.statusCode).to.be.equal(200)
           expect(res.body.message).to.be.equal('User was successfully deleted')

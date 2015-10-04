@@ -8,54 +8,50 @@ const chai      = require('chai')
 
 require('co-mocha')(mocha)
 
-describe('HistoryModel', function() {
+describe('HistoryModel', () => {
 
   let login = 'rafaeljesus'
   let fixture = require('./fixture')()
 
-  afterEach(function* (done) {
+  afterEach(function* () {
     try {
       yield redis.flushdb()
-      done()
     } catch(err) {
-      done(err)
+      expect(err).to.not.be.ok
     }
   })
 
-  describe('.find', function() {
+  describe('.find', () => {
 
-    before(function *(done) {
+    before(function* () {
       try {
         yield [
           History.create(fixture.history1),
           History.create(fixture.history2)
         ]
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
 
-    it('should find all history', function* (done) {
+    it('should find all history', function* () {
       try {
         let res = yield History.find(login)
         expect(res.length).to.be.equal(2)
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
   })
 
-  describe('.create', function() {
+  describe('.create', () => {
 
-    it('should create a history event', function* (done) {
+    it('should create a history event', function* () {
       try {
         let res = yield History.create(fixture.history1)
         expect(res).to.be.eql(1)
-        done()
       } catch(err) {
-        done(err)
+        expect(err).to.not.be.ok
       }
     })
   })

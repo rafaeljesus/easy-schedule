@@ -13,7 +13,7 @@ const chai      = require('chai')
 chai.use(sinonChai)
 require('co-mocha')(mocha)
 
-describe('SchedulerSpec', function() {
+describe('SchedulerSpec', () => {
 
   let fixture = require('./fixture')().event1
   fixture.id = 1
@@ -22,15 +22,15 @@ describe('SchedulerSpec', function() {
     body: fixture
   }
 
-  describe('.use', function() {
+  describe('.use', () => {
 
     let spy
 
-    afterEach(function() {
+    afterEach(() => {
       spy.restore()
     })
 
-    it('should subscribe to schedule:created|updated|deleted', function() {
+    it('should subscribe to schedule:created|updated|deleted', () => {
       spy = sinon.spy(redis, 'subscribe')
       scheduler.use(redis)
       expect(spy).to.have.been.calledWith('schedule:created')
@@ -38,14 +38,14 @@ describe('SchedulerSpec', function() {
       expect(spy).to.have.been.calledWith('schedule:deleted')
     })
 
-    it('should listen to redis message', function() {
+    it('should listen to redis message', () => {
       spy = sinon.spy(redis, 'on')
       scheduler.use(redis)
       expect(spy).to.have.been.calledWith('message')
     })
   })
 
-  describe('.start', function() {
+  describe('.start', () => {
 
     let sch
       , findAllStub
@@ -54,42 +54,40 @@ describe('SchedulerSpec', function() {
       , evt1 = fixture.event1
       , evt2 = fixture.event2
 
-    before(function() {
+    before(() => {
       sch = scheduler(redis)
     })
 
-    after(function() {
+    after(() => {
       findAllStub.restore()
       _scheduleStub.restore()
     })
 
     it('should return all events', function* () {
       _scheduleStub = sinon.stub(sch, '_schedule')
-      findAllStub = sinon.stub(Event, 'findAll', function() {
-        return [evt1, evt2]
-      })
+      findAllStub = sinon.stub(Event, 'findAll', () => [evt1, evt2])
       yield sch.start()
       expect(findAllStub).to.have.been.called
       expect(_scheduleStub).to.have.been.calledTwice
     })
   })
 
-  describe('.handleMessage', function() {
+  describe('.handleMessage', () => {
 
     let channel = {}
       , spy
 
-    afterEach(function() {
+    afterEach(() => {
       spy.restore()
     })
 
-    context('when action is created', function() {
+    context('when action is created', () => {
 
-      before(function() {
+      before(() => {
         spy = sinon.spy(schedule, 'scheduleJob')
       })
 
-      it('should schedule a job event', function() {
+      it('should schedule a job event', () => {
         let sch = scheduler(redis)
         sch.handleMessage(channel, JSON.stringify(message))
         expect(spy).to.have.been.calledWith(fixture.cron)
@@ -97,13 +95,13 @@ describe('SchedulerSpec', function() {
       })
     })
 
-    context('when action is updated', function() {
+    context('when action is updated', () => {
 
       let sch
         , cancelSpy
         , _scheduleSpy
 
-      before(function() {
+      before(() => {
         sch = scheduler(redis)
         message.action = 'updated'
         sch._schedule(message.body)
@@ -111,12 +109,12 @@ describe('SchedulerSpec', function() {
         _scheduleSpy = sinon.spy(sch, '_schedule')
       })
 
-      after(function() {
+      after(() => {
         cancelSpy.restore()
         _scheduleSpy.restore()
       })
 
-      it('should update a job event', function() {
+      it('should update a job event', () => {
         sch.handleMessage(channel, JSON.stringify(message))
         expect(cancelSpy).to.have.been.called
         expect(_scheduleSpy).to.have.been.called
@@ -124,42 +122,42 @@ describe('SchedulerSpec', function() {
       })
     })
 
-    context('when action is deleted', function() {
+    context('when action is deleted', () => {
 
       let sch
         , cancelSpy
 
-      before(function() {
+      before(() => {
         sch = scheduler(redis)
         message.action = 'deleted'
         sch._schedule(message.body)
         cancelSpy = sinon.spy(sch.runningJobs[message.body.id], 'cancel')
       })
 
-      after(function() {
+      after(() => {
         cancelSpy.restore()
       })
 
-      it('should delete a job event', function() {
+      it('should delete a job event', () => {
         sch.handleMessage(channel, JSON.stringify(message))
         expect(sch.jobs).to.be.empty
       })
     })
   })
 
-  describe('._schedule', function() {
+  describe('._schedule', () => {
 
     let sch, spy
 
-    before(function() {
+    before(() => {
       sch = scheduler(redis)
     })
 
-    after(function() {
+    after(() => {
       spy.restore()
     })
 
-    it('should schedule a job', function() {
+    it('should schedule a job', () => {
       spy = sinon.spy(schedule, 'scheduleJob')
       sch._schedule(message.body)
       expect(spy).to.have.been.calledWith(message.body.cron)
@@ -167,12 +165,12 @@ describe('SchedulerSpec', function() {
     })
   })
 
-  describe('._onEvent', function() {
+  describe('._onEvent', () => {
 
     let httpMock
       , nock = require('nock')
 
-    before(function() {
+    before(() => {
       httpMock = nock(message.body.url)
         .get('/')
         .reply(200)
@@ -180,11 +178,11 @@ describe('SchedulerSpec', function() {
 
     after(nock.cleanAll)
 
-    afterEach(function() {
+    afterEach(() => {
       httpMock.done()
     })
 
-    it('should send http request', function(done) {
+    it('should send http request', done => {
       let sch = scheduler(redis)
       sch._onEvent(message.body)
       setTimeout(done, 100)

@@ -12,7 +12,7 @@ const supertest = require('supertest')
 
 require('co-mocha')(mocha)
 
-describe('EventsControllerSpec', function() {
+describe('EventsControllerSpec', () => {
 
   let fixture = require('./fixture')()
     , evt1 = fixture.event1
@@ -44,28 +44,28 @@ describe('EventsControllerSpec', function() {
     }
   })
 
-  it('should respond 401', function(done) {
+  it('should respond 401', done => {
     request
     .get('/events')
     .set('Accept', 'application/json')
     .set('Accept-Encoding', 'gzip')
     .expect('Content-Type', /json/)
-    .expect(401, function(err, res) {
+    .expect(401, (err, res) => {
       if (err) return done(err)
       expect(res.body.error).to.equal('unauthorized')
       done()
     })
   })
 
-  describe('GET /v1/events', function() {
-    it('should find all events', function(done) {
+  describe('GET /v1/events', () => {
+    it('should find all events', done => {
       request
         .get('/v1/events')
         .auth(login, password)
         .set('Accept', 'application/json')
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
-        .expect(200, function(err, res) {
+        .expect(200, (err, res) => {
           if (err) return done(err)
           expect(res.body.length).to.be.equal(2)
           expect(res.body).to.eql([evt2, evt1])
@@ -74,15 +74,15 @@ describe('EventsControllerSpec', function() {
     })
   })
 
-  describe('GET /v1/events/:id', function() {
-    it('should find a event by id', function(done) {
+  describe('GET /v1/events/:id', () => {
+    it('should find a event by id', done => {
       request
         .get('/v1/events/' + evt1.id)
         .auth(login, password)
         .set('Accept', 'application/json')
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
-        .expect(200, function(err, res) {
+        .expect(200, (err, res) => {
           if (err) return done(err)
           expect(res.body.id).to.eql(evt1.id)
           done()
@@ -90,8 +90,8 @@ describe('EventsControllerSpec', function() {
     })
   })
 
-  describe('POST /v1/events', function() {
-    it('should create a event', function(done) {
+  describe('POST /v1/events', () => {
+    it('should create a event', done => {
       request
         .post('/v1/events')
         .auth(login, password)
@@ -99,7 +99,7 @@ describe('EventsControllerSpec', function() {
         .set('Accept-Encoding', 'gzip')
         .send(_.omit(evt1, 'id'))
         .expect('Content-Type', /json/)
-        .expect(200, function(err, res) {
+        .expect(200, (err, res) => {
           if (err) return done(err)
           expect(res.body.id).to.be.ok
           done()
@@ -107,8 +107,8 @@ describe('EventsControllerSpec', function() {
     })
   })
 
-  describe('PUT /v1/events/:id', function() {
-    it('should update a event', function(done) {
+  describe('PUT /v1/events/:id', () => {
+    it('should update a event', done => {
       evt1.url = 'https://github.com/rafaeljesus'
       request
         .put('/v1/events/' + evt1.id)
@@ -117,7 +117,7 @@ describe('EventsControllerSpec', function() {
         .set('Accept', 'application/json')
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
-        .expect(200, function(err, res) {
+        .expect(200, (err, res) => {
           if (err) return done(err)
           expect(res.body.url).to.be.equal(evt1.url)
           done()
@@ -125,15 +125,15 @@ describe('EventsControllerSpec', function() {
     })
   })
 
-  describe('DELETE /v1/events/:id', function() {
-    it('should delete a event', function(done) {
+  describe('DELETE /v1/events/:id', () => {
+    it('should delete a event', done => {
       request
         .delete('/v1/events/' + evt1.id)
         .auth(login, password)
         .set('Accept', 'application/json')
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
-        .expect(200, function(err, res) {
+        .expect(200, (err, res) => {
           if (err) return done(err)
           expect(res.status).to.be.equal(200)
           done()

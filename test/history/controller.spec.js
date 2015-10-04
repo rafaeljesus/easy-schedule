@@ -11,43 +11,41 @@ const supertest = require('supertest')
 
 require('co-mocha')(mocha)
 
-describe('HistoryControllerSpec', function() {
+describe('HistoryControllerSpec', () => {
 
   let login = 'rafaeljesus'
     , password = 'user-password-hash'
     , fixture = require('./fixture')()
 
-  beforeEach(function* (done) {
+  beforeEach(function* () {
     try {
       yield [
         History.create(fixture.history1),
         History.create(fixture.history2),
         User.create(login, password)
       ]
-      done()
     } catch(err) {
-      done(err)
+      expect(err).to.not.be.ok
     }
   })
 
-  afterEach(function* (done) {
+  afterEach(function* () {
     try {
       yield redis.flushdb()
-      done()
     } catch(err) {
-      done(err)
+      expect(err).to.not.be.ok
     }
   })
 
-  describe('GET /v1/history', function() {
-    it('should find event history', function(done) {
+  describe('GET /v1/history', () => {
+    it('should find event history', done => {
       request
         .get('/v1/history')
         .auth(login, password)
         .set('Accept', 'application/json')
         .set('Accept-Encoding', 'gzip')
         .expect('Content-Type', /json/)
-        .expect(200, function(err, res) {
+        .expect(200, (err, res) => {
           if (err) return done(err)
           expect(res.body).to.have.length(2)
           done()

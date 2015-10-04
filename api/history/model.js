@@ -16,5 +16,5 @@ exports.create = function* (data) {
 }
 
 function stringify(data) {
-  return JSON.stringify(data);
+  return JSON.stringify(data)
 }

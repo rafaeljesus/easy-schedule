@@ -13,6 +13,14 @@ describe('HomeRoutesSpec', () => {
     }
   })
 
+  afterEach(function* () {
+    try {
+      yield User.cleardb()
+    } catch(err) {
+      expect(err).to.not.be.ok
+    }
+  })
+
   it('should respond 200', done => {
     request.
       get('/v1').

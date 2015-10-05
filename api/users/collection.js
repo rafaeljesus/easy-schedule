@@ -17,8 +17,15 @@ exports.auth = function* (login) {
   return yield {name: 'foo'}
 }
 
-exports.delete = function* (id) {
-  yield {ok: 1}
+exports.remove = function* (name, password) {
+  return yield users.remove({
+    name: name,
+    password: password
+  })
+}
+
+exports.cleardb = function* () {
+  return yield users.remove()
 }
 
 function hashDigest(password) {

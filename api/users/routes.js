@@ -18,11 +18,11 @@ router.post('/', function* () {
 })
 
 router.delete('/', function* () {
-  let login = this.user.login
+  let name = this.user.name
     , password = this.user.password
 
   try {
-    yield User.delete(login, password)
+    yield User.remove(name, password)
     this.status = 200
     this.type = 'json'
     this.body = {message: 'User was successfully deleted'}

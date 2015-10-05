@@ -8,6 +8,7 @@ import cors from 'kcors'
 import zlib from 'zlib'
 import auth from './middlewares/auth'
 import APIhome from './api/home/routes'
+import APIusers from './api/users/routes'
 
 const app = koa()
 
@@ -41,7 +42,7 @@ app.use(logger())
 app.use(cors())
 app.use(auth())
 app.use(mount('/v1', APIhome.middleware()))
-// app.use(mount('/v1/users', APIusers.middleware()))
+app.use(mount('/v1/users', APIusers.middleware()))
 // app.use(mount('/v1/events', APIevents.middleware()))
 // app.use(mount('/v1/history', APIhistory.middleware()))
 app.use(handleErr)

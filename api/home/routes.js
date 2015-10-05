@@ -1,8 +1,11 @@
-'use strict';
+import koaRouter from 'koa-router'
 
-const router    = require('koa-router')()
-  , controller  = require('./controller')
+const router = koaRouter()
 
-router.get('/', controller.index)
+router.get('/', function* () {
+  this.type = 'json'
+  this.status = 200
+  this.body = {message: 'Easy Schedule rest api working'}
+})
 
 module.exports = router

@@ -1,4 +1,5 @@
+--require test/helpers
 --reporter spec
 --ui bdd
 --recursive
---r co-mocha
+--compilers js:babel/register

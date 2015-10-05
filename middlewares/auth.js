@@ -1,6 +1,4 @@
-'use strict'
-
-const User = require('../api/users/model')
+import User from '../api/users/collection'
 
 const unauthorized = function* (next) {
   let isCreateUser = this.method === 'POST' &&
@@ -36,18 +34,18 @@ const Auth = function() {
     }
 
     let user
-      , login = authorization[0]
+      , name = authorization[0]
       , password = authorization[1]
 
     try {
-      user = yield User.auth(login, password)
+      user = yield User.auth(name, password)
     } catch(err) {
       this.throw(500, err)
     }
 
     if (!user) return yield* unauthorized.call(this, next)
 
-    this.user = {login: login, password: password}
+    this.user = {name: name, password: password}
     yield* next
   }
 }

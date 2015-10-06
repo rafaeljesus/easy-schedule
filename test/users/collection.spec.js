@@ -1,21 +1,13 @@
-'use strict'
+import User from '../../api/users/collection'
 
-const chai      = require('chai')
-  , mocha       = require('mocha')
-  , expect      = chai.expect
-  , redis       = require('../../lib/redis')
-  , User        = require('../../api/users/model')
+describe('User:CollectionSpec', () => {
 
-require('co-mocha')(mocha)
-
-describe('UserModel', () => {
-
-  let login = 'rafaeljesus'
+  let name = 'rafaeljesus'
     , password = 'mypassword'
 
   afterEach(function* () {
     try {
-      yield redis.flushdb()
+      yield User.cleardb()
     } catch(err) {
       expect(err).to.not.be.ok
     }
@@ -25,8 +17,8 @@ describe('UserModel', () => {
 
     it('should create a new user', function* () {
       try {
-        let res = yield User.create(login, password)
-        expect(res).to.be.equal('OK')
+        let res = yield User.create(name, password)
+        expect(res._id).to.exist
       } catch(err) {
         expect(err).to.not.be.ok
       }
@@ -37,7 +29,7 @@ describe('UserModel', () => {
 
     before(function* () {
       try {
-        yield User.create(login, password)
+        yield User.create(name, password)
       } catch(err) {
         expect(err).to.not.be.ok
       }
@@ -45,8 +37,8 @@ describe('UserModel', () => {
 
     it('should auth a user', function* () {
       try {
-        let user = yield User.auth(login, password)
-        expect(user).to.be.ok
+        let user = yield User.auth(name, password)
+        expect(user).to.exist
       } catch(err) {
         expect(err).to.not.be.ok
       }
@@ -57,7 +49,7 @@ describe('UserModel', () => {
 
     before(function* () {
       try {
-        yield User.create(login, password)
+        yield User.create(name, password)
       } catch(err) {
         expect(err).to.not.be.ok
       }
@@ -65,7 +57,7 @@ describe('UserModel', () => {
 
     it('should delete a user', function* () {
       try {
-        let res = yield User.delete(login, password)
+        let res = yield User.remove(name, password)
         expect(res).to.be.equal(1)
       } catch(err) {
         expect(err).to.not.be.ok

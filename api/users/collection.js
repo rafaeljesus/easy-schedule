@@ -13,8 +13,11 @@ exports.create = function* (name, password) {
   })
 }
 
-exports.auth = function* (login) {
-  return yield {name: 'foo'}
+exports.auth = function* (name, password) {
+  return yield users.find({
+    name: name,
+    password: password
+  })
 }
 
 exports.remove = function* (name, password) {

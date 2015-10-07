@@ -1,8 +1,14 @@
-'use strict';
+import koaRouter from 'koa-router'
+import History from './collection'
 
-const router    = require('koa-router')()
-  , controller  = require('./controller')
+const router = koaRouter()
 
-router.get('/', controller.index)
+router.get('/', function* () {
+  try {
+    this.body = yield History.findByUser(this.user)
+  } catch(err) {
+    this.throw(500, err)
+  }
+})
 
 module.exports = router

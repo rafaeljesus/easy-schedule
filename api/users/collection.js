@@ -1,9 +1,6 @@
-import crypto from 'crypto'
-import monk from 'monk'
-import wrap from 'co-monk'
+import mongo from '../../lib/mongo'
 
-const db = monk('localhost/schedule')
-  , users = wrap(db.get('users'))
+const users = mongo('users')
 
 exports.create = function* (name, password) {
   return yield users.insert({

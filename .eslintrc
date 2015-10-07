@@ -5,6 +5,10 @@
     "node": true,
     "es6": true
   },
+  "globals": {
+    "expect": true,
+    "request": true
+  },
   "ecmaFeatures": {
     "arrowFunctions": true,
     "generators": true,

@@ -1,3 +1,4 @@
+// import crypto from 'crypto'
 import mongo from '../../lib/mongo'
 
 const users = mongo('users')
@@ -28,8 +29,8 @@ exports.cleardb = function* () {
   return yield users.remove()
 }
 
-function hashDigest(password) {
-  let shaSum = crypto.createHash('sha256')
-  shaSum.update(password)
-  return shaSum.digest('hex')
-}
+// function hashDigest(password) {
+//   let shaSum = crypto.createHash('sha256')
+//   shaSum.update(password)
+//   return shaSum.digest('hex')
+// }

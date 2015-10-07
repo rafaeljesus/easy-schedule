@@ -46,7 +46,7 @@ describe('Events:RoutesSpec', () => {
         if (err) return done(err)
         expect(res.body.error).to.equal('unauthorized')
         done()
-    })
+      })
   })
 
   describe('GET /v1/events', () => {

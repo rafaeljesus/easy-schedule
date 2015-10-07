@@ -36,10 +36,3 @@ exports.remove = function* (id) {
 exports.cleardb = function* () {
   return yield events.remove()
 }
-
-function payload(action, evt) {
-  return JSON.stringify({
-    action: action,
-    body: evt
-  })
-}

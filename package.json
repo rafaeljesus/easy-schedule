@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "Simple and flexible job scheduling for your application",
   "scripts": {
-    "start": "node bin/easy.schedule",
+    "start": "babel-node bin/easy.schedule",
     "test": "npm run lint && NODE=test ./node_modules/mocha/bin/_mocha --recursive -- test",
     "lint": "eslint ."
   },

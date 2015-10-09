@@ -1,80 +1,68 @@
-'use strict'
+import co from 'co'
+import request from 'co-request'
+import scheduler from 'node-schedule'
+import log from '../../lib/log'
+import utils from '../../lib/utils'
+import C from '../../lib/constants'
+import Event from '../events/collection'
+import History from '../history/collection'
 
-const co        = require('co')
-  , request     = require('co-request')
-  , _           = require('lodash')
-  , cluster     = require('cluster')
-  , schedule    = require('node-schedule')
-  , log         = require('../../lib/log')
-  , C           = require('../../lib/constants')
-  , Event       = require('../events/model')
-  , History     = require('../history/model')
+const isPlainObject = utils.isPlainObject
+  , runningJobs = {}
 
-let Scheduler = function(redis) {
-  if (!(this instanceof Scheduler)) return new Scheduler(redis)
-  this.runningJobs = {}
-  redis.subscribe('schedule:created')
-  redis.subscribe('schedule:updated')
-  redis.subscribe('schedule:deleted')
-  redis.on('message', this.handleMessage.bind(this))
-  let isFirstWorker = cluster.worker && cluster.worker.id === 1
-  if (isFirstWorker) this.start()
-}
-
-Scheduler.prototype.start = function() {
-  let _this = this
+const onEvent = event => {
   return co(function* () {
-    let res = yield Event.findAll()
-    if (!res || _.isNull(_.first(res))) return
-    if (_.isPlainObject(res)) res = [res]
-    res.map(_this._schedule, _this)
-  }).catch(err => log.error('scheduler start failed', err))
+    let res = yield request(event.url)
+    let logObj = {
+      statusCode: res.statusCode,
+      body: res.body,
+      headers: res.headers
+    }
+    log.info('succesfully sent cron job request', logObj)
+    logObj.event = event._id
+    logObj.user = event.user
+    logObj.url = event.url
+    return yield History.create(logObj)
+  }).catch(err => log.error('failed to send cron job request', err))
 }
 
-Scheduler.prototype.handleMessage = function(channel, message) {
-  let payload = JSON.parse(message)
-    , evt = payload.body
-    , action = payload.action
-
-  if (action === C.CREATED) {
-    this._schedule(evt)
-  } else {
-    let job = this.runningJobs[evt.id]
-    if (job) {
-      job.cancel()
-      job = null
-    }
-    if (action === C.UPDATED) this._schedule(evt)
+const _cancel = _id => {
+  let job = runningJobs[_id]
+  if (job) {
+    job.cancel()
+    job = null
   }
 }
 
-Scheduler.prototype._schedule = function(evt) {
-  let cron = evt.cron ? evt.cron : new Date(evt.when)
-    , cb = this._onEvent.bind(this, evt)
-    , job = schedule.scheduleJob(cron, cb)
+const schedule = event => {
+  const cron = event.cron ? event.cron : new Date(event.when)
+    , job = scheduler.scheduleJob(cron, onEvent.bind(null, event))
 
-  this.runningJobs[evt.id] = job
-  log.info('succesfully scheduled job', evt)
+  runningJobs[event._id] = job
+  log.info('succesfully scheduled job', event)
 }
 
-Scheduler.prototype._onEvent = function(evt) {
-  return co(function* () {
-    let res = yield request(evt.url)
-    res = _.pick(res, 'statusCode', 'body', 'headers')
-    log.info('succesfully sent cron job request', res)
-
-    yield History.create(_.assign(res, {
-      event: evt.id
-      , login: evt.login
-      , url: evt.url
-    }))
-
+const start = () => {
+  co(function* () {
+    let res = yield Event.findAll()
+    if (!res || res.length === 0) return
+    if (isPlainObject(res)) res = [res]
+    res.map(schedule)
   })
-  .catch(err => log.error('failed to send cron job request', err))
+  .catch(err => log.error('scheduler failed to start', err))
 }
 
-Scheduler.use = function() {
-  Scheduler.apply(this, arguments)
+const create = event => {
+ schedule(event)
 }
 
-module.exports = Scheduler
+const update = (_id, event) => {
+  cancel(_id)
+  schedule(event)
+}
+
+const cancel = (_id) => {
+  _cancel(_id)
+}
+
+export {start, create, update, cancel}

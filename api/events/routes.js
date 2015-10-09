@@ -1,5 +1,6 @@
 import koaRouter from 'koa-router'
 import Event from './collection'
+import * as Scheduler from './scheduler'
 
 const router = koaRouter()
 
@@ -15,7 +16,11 @@ router.post('/', function* () {
   let event = this.request.body
 
   try {
-    this.body = yield Event.create(event)
+    yield [
+      Event.create(event),
+      Scheduler.create(event)
+    ]
+    this.body = {message: 'succesfully scheduled event job'}
   } catch(err) {
     this.throw(500, err)
   }
@@ -26,7 +31,8 @@ router.put('/:id', function* () {
     , id = this.params.id
 
   try {
-    this.body = yield Event.update(id, event)
+    yield Event.update(id, event)
+    this.body = {message: 'succesfully updated schedule job'}
   } catch(err) {
     console.log(err)
     this.throw(500, err)

@@ -1,10 +1,15 @@
 import http from 'http'
-import cluster form 'cluster'
+import cluster from 'cluster'
 import os from 'os'
+import co from 'co'
+import * as Scheduler from '../api/events/scheduler'
 
 const numCPUs = os.cpus().length
 
 if (cluster.isMaster) {
+
+  Scheduler.start()
+
   for (let i = 0; i < numCPUs; ++i) {
     cluster.fork()
   }

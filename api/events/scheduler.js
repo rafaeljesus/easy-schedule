@@ -64,7 +64,7 @@ const update = (_id, event) => {
   schedule(event)
 }
 
-const cancel = (_id) => {
+const cancel = _id => {
   _cancel(_id)
 }
 

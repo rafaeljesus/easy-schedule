@@ -1,5 +1,5 @@
 import koaRouter from 'koa-router'
-import User from './collection'
+import {create, remove} from './collection'
 
 const router = koaRouter()
 
@@ -8,7 +8,7 @@ router.post('/', function* () {
     , password = this.request.body.password
 
   try {
-    yield User.create(login, password)
+    yield create(login, password)
     this.status = 201
     this.type = 'json'
     this.body = {message: 'User was successfully created'}
@@ -22,7 +22,7 @@ router.delete('/', function* () {
     , password = this.user.password
 
   try {
-    yield User.remove(name, password)
+    yield remove(name, password)
     this.status = 200
     this.type = 'json'
     this.body = {message: 'User was successfully deleted'}

@@ -3,7 +3,7 @@ import mongo from '../../lib/mongo'
 
 const users = mongo('users')
 
-exports.create = function* (name, password) {
+const create = function* (name, password) {
   return yield users.insert({
     name: name,
     password: password,
@@ -11,23 +11,25 @@ exports.create = function* (name, password) {
   })
 }
 
-exports.auth = function* (name, password) {
+const auth = function* (name, password) {
   return yield users.find({
     name: name,
     password: password
   })
 }
 
-exports.remove = function* (name, password) {
+const remove = function* (name, password) {
   return yield users.remove({
     name: name,
     password: password
   })
 }
 
-exports.cleardb = function* () {
+const cleardb = function* () {
   return yield users.remove()
 }
+
+export default {create, auth, remove, cleardb}
 
 // function hashDigest(password) {
 //   let shaSum = crypto.createHash('sha256')

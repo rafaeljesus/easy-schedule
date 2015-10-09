@@ -1,6 +1,6 @@
 import koaRouter from 'koa-router'
 import Event from './collection'
-import * as Scheduler from './scheduler'
+import Scheduler from './scheduler'
 
 const router = koaRouter()
 

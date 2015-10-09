@@ -1,4 +1,4 @@
-import {findByUser, create, cleardb} from '../../api/history/collection'
+import History from '../../api/history/collection'
 
 describe('History:CollectionSpec', () => {
 
@@ -7,7 +7,7 @@ describe('History:CollectionSpec', () => {
 
   afterEach(function* () {
     try {
-      yield cleardb()
+      yield History.cleardb()
     } catch(err) {
       expect(err).to.not.exist
     }
@@ -20,8 +20,8 @@ describe('History:CollectionSpec', () => {
         fixture.history1.user = user
         fixture.history2.user = user
         yield [
-          create(fixture.history1),
-          create(fixture.history2)
+          History.create(fixture.history1),
+          History.create(fixture.history2)
         ]
       } catch(err) {
         expect(err).to.not.exist
@@ -30,7 +30,7 @@ describe('History:CollectionSpec', () => {
 
     it('should find all history', function* () {
       try {
-        let res = yield findByUser(user)
+        let res = yield History.findByUser(user)
         expect(res.length).to.be.equal(2)
       } catch(err) {
         expect(err).to.not.exist
@@ -42,7 +42,7 @@ describe('History:CollectionSpec', () => {
 
     it('should create a history event', function* () {
       try {
-        let res = yield create(fixture.history1)
+        let res = yield History.create(fixture.history1)
         expect(res._id).to.exist
       } catch(err) {
         expect(err).to.not.exist

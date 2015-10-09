@@ -46,7 +46,10 @@ const start = () => {
   co(function* () {
     let res = yield Event.findAll()
     if (!res || res.length === 0) return
-    if (isPlainObject(res)) res = [res]
+
+    if (isPlainObject(res)) {
+      return schedule(res)
+    }
     res.map(schedule)
   })
   .catch(err => log.error('scheduler failed to start', err))
@@ -65,4 +68,4 @@ const cancel = (_id) => {
   _cancel(_id)
 }
 
-export {start, create, update, cancel}
+export default {start, create, update, cancel}

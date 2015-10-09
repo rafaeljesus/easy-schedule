@@ -2,16 +2,16 @@ import mongo from '../../lib/mongo'
 
 const history = mongo('history')
 
-exports.findByUser = function* (user) {
+export function* findByUser(user) {
   return yield history.find({
     'user.name': user.name
   })
 }
 
-exports.create = function* (data) {
+export function* create(data) {
   return yield history.insert(data)
 }
 
-exports.cleardb = function* () {
+export function* cleardb() {
   return yield history.remove()
 }

@@ -2,7 +2,7 @@ import http from 'http'
 import cluster from 'cluster'
 import os from 'os'
 import co from 'co'
-import * as Scheduler from '../api/events/scheduler'
+import Scheduler from '../api/events/scheduler'
 
 const numCPUs = os.cpus().length
 

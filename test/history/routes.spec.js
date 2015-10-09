@@ -1,5 +1,5 @@
 import User from '../../api/users/collection'
-import {findByUser, create, cleardb} from '../../api/history/collection'
+import History from '../../api/history/collection'
 
 describe('History:RoutesSpec', () => {
 
@@ -12,8 +12,8 @@ describe('History:RoutesSpec', () => {
       fixture.history1.user = {name: name}
       fixture.history2.user = {name: name}
       yield [
-        create(fixture.history1),
-        create(fixture.history2),
+        History.create(fixture.history1),
+        History.create(fixture.history2),
         User.create(name, password)
       ]
     } catch(err) {
@@ -23,7 +23,7 @@ describe('History:RoutesSpec', () => {
 
   afterEach(function* () {
     try {
-      yield cleardb()
+      yield History.cleardb()
     } catch(err) {
       expect(err).to.not.exist
     }

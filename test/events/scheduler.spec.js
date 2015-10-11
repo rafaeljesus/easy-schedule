@@ -1,78 +1,32 @@
-'use strict'
+import scheduler from 'node-schedule'
+import Scheduler from '../../api/events/scheduler'
+import Event from '../../api/events/collection'
 
-const chai      = require('chai')
-  , mocha       = require('mocha')
-  , sinon       = require('sinon')
-  , sinonChai   = require('sinon-chai')
-  , schedule    = require('node-schedule')
-  , expect      = chai.expect
-  , redis       = require('../../lib/redis-sub')
-  , Event       = require('../../api/events/model')
-  , scheduler   = require('../../api/events/scheduler')
-
-chai.use(sinonChai)
-require('co-mocha')(mocha)
-
-describe('SchedulerSpec', () => {
-
-  let fixture = require('./fixture')().event1
-  fixture.id = 1
-  let message = {
-    action: 'created',
-    body: fixture
-  }
-
-  describe('.use', () => {
-
-    let spy
-
-    afterEach(() => {
-      spy.restore()
-    })
-
-    it('should subscribe to schedule:created|updated|deleted', () => {
-      spy = sinon.spy(redis, 'subscribe')
-      scheduler.use(redis)
-      expect(spy).to.have.been.calledWith('schedule:created')
-      expect(spy).to.have.been.calledWith('schedule:updated')
-      expect(spy).to.have.been.calledWith('schedule:deleted')
-    })
-
-    it('should listen to redis message', () => {
-      spy = sinon.spy(redis, 'on')
-      scheduler.use(redis)
-      expect(spy).to.have.been.calledWith('message')
-    })
-  })
+describe('Events:SchedulerSpec', () => {
 
   describe('.start', () => {
 
-    let sch
-      , findAllStub
-      , _scheduleStub
-      , fixture = require('./fixture')()
-      , evt1 = fixture.event1
-      , evt2 = fixture.event2
+    let findAllStub
+      , scheduleJobSpy
 
-    before(() => {
-      sch = scheduler(redis)
+    beforeEach(() => {
+      findAllStub = sinon.stub(Event, 'findAll', () => [{_id: 'foo'}, {_id: 'bar'}])
+      scheduleJobSpy = sinon.spy(scheduler, 'scheduleJob')
     })
 
-    after(() => {
+    afterEach(() => {
       findAllStub.restore()
-      _scheduleStub.restore()
+      scheduleJobSpy.restore()
     })
 
-    it('should return all events', function* () {
-      _scheduleStub = sinon.stub(sch, '_schedule')
-      findAllStub = sinon.stub(Event, 'findAll', () => [evt1, evt2])
-      yield sch.start()
+    it('should schedule all events stored on db', function* () {
+      yield Scheduler.start()
       expect(findAllStub).to.have.been.called
-      expect(_scheduleStub).to.have.been.calledTwice
+      expect(scheduleJobSpy).to.have.been.calledTwice
     })
   })
 
-  describe('.handleMessage', () => {
+  describe.skip('.handleMessage', () => {
 
     let channel = {}
       , spy
@@ -145,7 +99,7 @@ describe('SchedulerSpec', () => {
     })
   })
 
-  describe('._schedule', () => {
+  describe.skip('._schedule', () => {
 
     let sch, spy
 
@@ -165,7 +119,7 @@ describe('SchedulerSpec', () => {
     })
   })
 
-  describe('._onEvent', () => {
+  describe.skip('._onEvent', () => {
 
     let httpMock
       , nock = require('nock')

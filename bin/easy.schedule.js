@@ -1,17 +1,20 @@
 import http from 'http'
 import cluster from 'cluster'
 import os from 'os'
+import co from 'co'
 import Scheduler from '../api/events/scheduler'
 
 const numCPUs = os.cpus().length
 
 if (cluster.isMaster) {
 
-  Scheduler.start()
+  co(function* () {
+    yield Scheduler.start()
+    for (let i = 0; i < numCPUs; ++i) {
+      cluster.fork()
+    }
+  })
 
-  for (let i = 0; i < numCPUs; ++i) {
-    cluster.fork()
-  }
 }
 
 if (cluster.isWorker) {

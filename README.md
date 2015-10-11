@@ -3,7 +3,6 @@
 [![Node version](https://img.shields.io/node/v/latest-version.svg?style=flat-square)](https://npmjs.org/package/easy-schedule)
 [![Build Status](https://img.shields.io/travis/rafaeljesus/easy-schedule/master.svg?style=flat-square
 )](https://travis-ci.org/rafaeljesus/easy-schedule)
-[![Code Climate](https://img.shields.io/codeclimate/github/rafaeljesus/easy-schedule.svg?style=flat-square)](https://codeclimate.com/github/rafaeljesus/easy-schedule)
 [![bitHound Score](https://www.bithound.io/github/rafaeljesus/easy-schedule/badges/score.svg)](https://www.bithound.io/github/rafaeljesus/easy-schedule)
 [![bitHound Dependencies](https://www.bithound.io/github/rafaeljesus/easy-schedule/badges/dependencies.svg)](https://www.bithound.io/github/rafaeljesus/easy-schedule/master/dependencies/npm)
 [![license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/rafaeljesus/easy-schedule/blob/master/LICENSE)

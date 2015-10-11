@@ -42,11 +42,7 @@ describe('Events:RoutesSpec', () => {
       set('Accept', 'application/json').
       set('Accept-Encoding', 'gzip').
       expect('Content-Type', /json/).
-      expect(401, (err, res) => {
-        if (err) return done(err)
-        expect(res.body.error).to.equal('unauthorized')
-        done()
-      })
+      expect(401, done)
   })
 
   describe('GET /v1/events', () => {
@@ -57,11 +53,7 @@ describe('Events:RoutesSpec', () => {
         set('Accept', 'application/json').
         set('Accept-Encoding', 'gzip').
         expect('Content-Type', /json/).
-        expect(200, (err, res) => {
-          if (err) return done(err)
-          expect(res.body.length).to.be.equal(2)
-          done()
-        })
+        expect(200, done)
     })
   })
 
@@ -73,11 +65,7 @@ describe('Events:RoutesSpec', () => {
         set('Accept', 'application/json').
         set('Accept-Encoding', 'gzip').
         expect('Content-Type', /json/).
-        expect(200, (err, res) => {
-          if (err) return done(err)
-          expect(res.body._id).to.be.equal(evt1._id + '')
-          done()
-        })
+        expect(200, done)
     })
   })
 
@@ -92,11 +80,7 @@ describe('Events:RoutesSpec', () => {
         set('Accept-Encoding', 'gzip').
         send(newEvent).
         expect('Content-Type', /json/).
-        expect(200, (err, res) => {
-          if (err) return done(err)
-          expect(res.body._id).to.exist
-          done()
-        })
+        expect(200, done)
     })
   })
 
@@ -113,11 +97,7 @@ describe('Events:RoutesSpec', () => {
         set('Accept', 'application/json').
         set('Accept-Encoding', 'gzip').
         expect('Content-Type', /json/).
-        expect(200, (err, res) => {
-          if (err) return done(err)
-          expect(res.body.url).to.be.equal(evt1.url)
-          done()
-        })
+        expect(200, done)
     })
   })
 
@@ -129,11 +109,7 @@ describe('Events:RoutesSpec', () => {
         set('Accept', 'application/json').
         set('Accept-Encoding', 'gzip').
         expect('Content-Type', /json/).
-        expect(200, (err, res) => {
-          if (err) return done(err)
-          expect(res.status).to.be.equal(200)
-          done()
-        })
+        expect(200, done)
     })
   })
 })

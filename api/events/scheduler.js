@@ -9,16 +9,17 @@ import utils from '../../lib/utils'
 const isPlainObject = utils.isPlainObject
   , runningJobs = {}
 
-const start = () => {
-  return co(function* () {
+const start = function* () {
+  try {
     let res = yield Event.findAll()
     if (!res || res.length === 0) return
     if (isPlainObject(res)) {
       return create(res)
     }
     res.map(create)
-  }).
-  catch(err => log.error('scheduler failed to start', err))
+  } catch(err) {
+    log.error('scheduler failed to start', err)
+  }
 }
 
 const cancel = _id => {

@@ -7,7 +7,8 @@
   },
   "globals": {
     "expect": true,
-    "request": true
+    "request": true,
+    "sinon": true
   },
   "ecmaFeatures": {
     "arrowFunctions": true,

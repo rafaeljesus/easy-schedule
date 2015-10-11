@@ -1,8 +1,6 @@
-import co from 'co'
 import scheduler from 'node-schedule'
 import handle from './handle'
 import Event from '../events/collection'
-import History from '../history/collection'
 import log from '../../lib/log'
 import utils from '../../lib/utils'
 

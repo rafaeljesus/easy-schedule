@@ -1,6 +1,6 @@
 import User from '../../api/users/collection'
 
-describe('UserRoutesSpec', () => {
+describe('User:RoutesSpec', () => {
 
   let name = 'user-login'
     , password = 'user-password'

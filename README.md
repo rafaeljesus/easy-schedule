@@ -4,7 +4,8 @@
 [![Build Status](https://img.shields.io/travis/rafaeljesus/easy-schedule/master.svg?style=flat-square
 )](https://travis-ci.org/rafaeljesus/easy-schedule)
 [![Code Climate](https://img.shields.io/codeclimate/github/rafaeljesus/easy-schedule.svg?style=flat-square)](https://codeclimate.com/github/rafaeljesus/easy-schedule)
-[![Test Coverage](https://img.shields.io/codeclimate/coverage/github/rafaeljesus/easy-schedule.svg)](https://codeclimate.com/github/rafaeljesus/easy-schedule/coverage)
+[![bitHound Score](https://www.bithound.io/github/rafaeljesus/easy-schedule/badges/score.svg)](https://www.bithound.io/github/rafaeljesus/easy-schedule)
+[![bitHound Dependencies](https://www.bithound.io/github/rafaeljesus/easy-schedule/badges/dependencies.svg)](https://www.bithound.io/github/rafaeljesus/easy-schedule/master/dependencies/npm)
 [![license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/rafaeljesus/easy-schedule/blob/master/LICENSE)
 
 Easy Schedule handles job scheduling for your application by storing and managing events that correspond to actions that your application intends to execute in the future.
@@ -13,7 +14,7 @@ At the appropriate time, Easy Schedule calls back to your application at the pro
 ## Built with
 - [nodejs](https://https://nodejs.org) &mdash; Back end is a nodejs.
 - [koa](http://koajs.com) &mdash; API is a KOA app. It respond to requests RESTfully in JSON.
-- [Redis](http://redis.io) &mdash; Redis as a data store and message queue events.
+- [Mongodb](https://www.mongodb.com/) &mdash; Mongodb as a data store.
 
 ## API
 

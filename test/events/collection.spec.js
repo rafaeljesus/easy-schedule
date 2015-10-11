@@ -115,7 +115,9 @@ describe('Events:CollectionSpec', () => {
     it('should update a event and publish schedule:updated', function* () {
       evt1.url = 'https://example2.com'
       try {
-        let evt = yield Event.update(evt1._id, evt1)
+        let _id = evt1._id
+        delete evt1._id
+        let evt = yield Event.update(_id, evt1)
         expect(evt.url).to.be.equal(evt1.url)
       } catch(err) {
         expect(err).to.not.exist

@@ -3,7 +3,6 @@ import request from 'co-request'
 import scheduler from 'node-schedule'
 import log from '../../lib/log'
 import utils from '../../lib/utils'
-import C from '../../lib/constants'
 import Event from '../events/collection'
 import History from '../history/collection'
 
@@ -26,7 +25,7 @@ const onEvent = event => {
   }).catch(err => log.error('failed to send cron job request', err))
 }
 
-const _cancel = _id => {
+const cancel = _id => {
   let job = runningJobs[_id]
   if (job) {
     job.cancel()
@@ -34,7 +33,7 @@ const _cancel = _id => {
   }
 }
 
-const schedule = event => {
+const create = event => {
   const cron = event.cron ? event.cron : new Date(event.when)
     , job = scheduler.scheduleJob(cron, onEvent.bind(null, event))
 
@@ -48,24 +47,16 @@ const start = () => {
     if (!res || res.length === 0) return
 
     if (isPlainObject(res)) {
-      return schedule(res)
+      return create(res)
     }
-    res.map(schedule)
+    res.map(create)
   })
   .catch(err => log.error('scheduler failed to start', err))
 }
 
-const create = event => {
- schedule(event)
-}
-
 const update = (_id, event) => {
   cancel(_id)
-  schedule(event)
-}
-
-const cancel = _id => {
-  _cancel(_id)
+  create(event)
 }
 
 export default {start, create, update, cancel}

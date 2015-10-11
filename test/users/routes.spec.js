@@ -21,12 +21,7 @@ describe('UserRoutesSpec', () => {
         set('Accept-Encoding', 'gzip').
         send({name: name, password: password}).
         expect('Content-Type', /json/).
-        expect(201, (err, res) => {
-          if (err) return done(err)
-          expect(res.statusCode).to.be.equal(201)
-          expect(res.body.message).to.be.equal('User was successfully created')
-          done()
-        })
+        expect(201, done)
     })
   })
 
@@ -36,7 +31,7 @@ describe('UserRoutesSpec', () => {
       try {
         yield User.create(name, password)
       } catch(err) {
-        expect(err).to.not.be.ok
+        expect(err).to.not.exist
       }
     })
 
@@ -47,12 +42,7 @@ describe('UserRoutesSpec', () => {
         set('Accept', 'application/json').
         set('Accept-Encoding', 'gzip').
         expect('Content-Type', /json/).
-        expect(200, (err, res) => {
-          if (err) return done(err)
-          expect(res.statusCode).to.be.equal(200)
-          expect(res.body.message).to.be.equal('User was successfully deleted')
-          done()
-        })
+        expect(200, done)
     })
   })
 

@@ -9,20 +9,17 @@ import History from '../history/collection'
 const isPlainObject = utils.isPlainObject
   , runningJobs = {}
 
-const onEvent = event => {
-  return co(function* () {
-    let res = yield request(event.url)
-    let logObj = {
-      statusCode: res.statusCode,
-      body: res.body,
-      headers: res.headers
+const start = () => {
+  co(function* () {
+    let res = yield Event.findAll()
+    if (!res || res.length === 0) return
+
+    if (isPlainObject(res)) {
+      return create(res)
     }
-    log.info('succesfully sent cron job request', logObj)
-    logObj.event = event._id
-    logObj.user = event.user
-    logObj.url = event.url
-    return yield History.create(logObj)
-  }).catch(err => log.error('failed to send cron job request', err))
+    res.map(create)
+  })
+  .catch(err => log.error('scheduler failed to start', err))
 }
 
 const cancel = _id => {
@@ -41,22 +38,30 @@ const create = event => {
   log.info('succesfully scheduled job', event)
 }
 
-const start = () => {
-  co(function* () {
-    let res = yield Event.findAll()
-    if (!res || res.length === 0) return
-
-    if (isPlainObject(res)) {
-      return create(res)
-    }
-    res.map(create)
-  })
-  .catch(err => log.error('scheduler failed to start', err))
-}
-
 const update = (_id, event) => {
   cancel(_id)
   create(event)
 }
 
-export default {start, create, update, cancel}
+const onEvent = event => {
+  return co(function* () {
+    let res = yield request(event.url)
+    let logObj = {
+      statusCode: res.statusCode,
+      body: res.body,
+      headers: res.headers
+    }
+    log.info('succesfully sent cron job request', logObj)
+    logObj.event = event._id
+    logObj.user = event.user
+    logObj.url = event.url
+    return yield History.create(logObj)
+  }).catch(err => log.error('failed to send cron job request', err))
+}
+
+export default {
+  start,
+  create,
+  update,
+  cancel
+}

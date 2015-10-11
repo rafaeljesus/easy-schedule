@@ -37,11 +37,7 @@ describe('History:RoutesSpec', () => {
         set('Accept', 'application/json').
         set('Accept-Encoding', 'gzip').
         expect('Content-Type', /json/).
-        expect(200, (err, res) => {
-          if (err) return done(err)
-          expect(res.body).to.have.length(2)
-          done()
-        })
+        expect(200, done)
     })
   })
 })

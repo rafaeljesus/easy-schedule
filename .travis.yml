@@ -2,8 +2,10 @@ language: node_js
 node_js:
   - '4.1'
 services:
-  - redis-server
+  - mongodb
 before_script:
+  - sleep 15
+  - mongo mydb_test --eval 'db.addUser("travis", "test");'
   - export PATH="$PATH:$(npm bin)"
   - npm update
 script:

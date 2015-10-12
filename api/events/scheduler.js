@@ -48,5 +48,6 @@ export default {
   start,
   create,
   update,
-  cancel
+  cancel,
+  runningJobs
 }

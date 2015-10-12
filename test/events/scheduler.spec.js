@@ -9,9 +9,10 @@ describe('Events:SchedulerSpec', () => {
     let findAllStub
       , scheduleJobSpy
 
-    beforeEach(() => {
+    beforeEach(function* () {
       findAllStub = sinon.stub(Event, 'findAll', () => [{_id: 'foo'}, {_id: 'bar'}])
       scheduleJobSpy = sinon.spy(scheduler, 'scheduleJob')
+      yield Scheduler.start()
     })
 
     afterEach(() => {
@@ -19,11 +20,20 @@ describe('Events:SchedulerSpec', () => {
       scheduleJobSpy.restore()
     })
 
-    it('should schedule all events stored on db', function* () {
-      yield Scheduler.start()
+    it('should find all events stored on db', () => {
       expect(findAllStub).to.have.been.called
+    })
+
+    it('should schedule events', () => {
       expect(scheduleJobSpy).to.have.been.calledTwice
     })
+
+    it('should have scheduled two running jobs', () => {
+      expect(Scheduler.runningJobs).to.contain.any.keys('foo', 'bar')
+    })
+  })
+
+  describe.skip('.create', () => {
   })
 
   // describe.skip('.handleMessage', () => {

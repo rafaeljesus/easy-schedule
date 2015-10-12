@@ -46,7 +46,7 @@ const create = event => {
 
 const update = (_id, event) => {
   cancel(_id)
-  create(event)
+  return create(event)
 }
 
 export default {

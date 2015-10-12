@@ -4,20 +4,32 @@ import Event from '../../api/events/collection'
 
 describe('Events:SchedulerSpec', () => {
 
+  let scheduleJobSpy
+    , event
+
+  beforeEach(() => {
+    event = {_id: 'foo', cron: '* * * * *'}
+    scheduleJobSpy = sinon.spy(scheduler, 'scheduleJob')
+  })
+
+  afterEach(() => {
+    scheduleJobSpy.restore()
+  })
+
   describe('.start', () => {
 
     let findAllStub
-      , scheduleJobSpy
 
     beforeEach(function* () {
-      findAllStub = sinon.stub(Event, 'findAll', () => [{_id: 'foo'}, {_id: 'bar'}])
-      scheduleJobSpy = sinon.spy(scheduler, 'scheduleJob')
+      findAllStub = sinon.stub(Event, 'findAll', () => [
+        {_id: 'foo'},
+        {_id: 'bar'}
+      ])
       yield Scheduler.start()
     })
 
     afterEach(() => {
       findAllStub.restore()
-      scheduleJobSpy.restore()
     })
 
     it('should find all events stored on db', () => {
@@ -35,16 +47,8 @@ describe('Events:SchedulerSpec', () => {
 
   describe('.create', () => {
 
-    let scheduleJobSpy
-      , event = {_id: 'foo', cron: '* * * * *'}
-
     beforeEach(function* () {
-      scheduleJobSpy = sinon.spy(scheduler, 'scheduleJob')
       yield Scheduler.create(event)
-    })
-
-    afterEach(() => {
-      scheduleJobSpy.restore()
     })
 
     it('should have scheduled running jobs', () => {
@@ -58,22 +62,27 @@ describe('Events:SchedulerSpec', () => {
 
   describe('.update', () => {
 
-    let scheduleJobSpy
-      , event = {_id: 'foo', cron: '* * * * *'}
-
     beforeEach(function* () {
-      scheduleJobSpy = sinon.spy(scheduler, 'scheduleJob')
       yield Scheduler.create(event)
-    })
-
-    afterEach(() => {
-      scheduleJobSpy.restore()
     })
 
     it('should update scheduled event', function* () {
       event.cron = '1 * * * *'
       yield Scheduler.update(event._id, event)
       expect(scheduleJobSpy).to.have.been.calledWith(event.cron)
+    })
+  })
+
+  describe('.cancel', () => {
+
+    beforeEach(function* () {
+      yield Scheduler.create(event)
+    })
+
+    it('should cancel a scheduled job', function* () {
+      let res = yield Scheduler.cancel(event._id)
+      expect(res.ok).to.eql(1)
+      expect(Scheduler.runningJobs[event._id]).to.not.exist
     })
   })
 

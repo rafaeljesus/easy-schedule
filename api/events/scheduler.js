@@ -21,10 +21,15 @@ const start = function* () {
 }
 
 const cancel = _id => {
-  let job = runningJobs[_id]
-  if (!job) return
-  job.cancel()
-  job = null
+  try {
+    let job = runningJobs[_id]
+    if (!job) return
+    job.cancel()
+    delete runningJobs[_id]
+    return {ok: 1}
+  } catch(err) {
+    throw err
+  }
 }
 
 const create = event => {

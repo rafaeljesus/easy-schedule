@@ -33,7 +33,27 @@ describe('Events:SchedulerSpec', () => {
     })
   })
 
-  describe.skip('.create', () => {
+  describe('.create', () => {
+
+    let scheduleJobSpy
+      , event = {_id: 'foo', cron: '* * * * *'}
+
+    beforeEach(function* () {
+      scheduleJobSpy = sinon.spy(scheduler, 'scheduleJob')
+      yield Scheduler.create(event)
+    })
+
+    afterEach(() => {
+      scheduleJobSpy.restore()
+    })
+
+    it('should have scheduled two running jobs', () => {
+      expect(Scheduler.runningJobs).to.contain.any.keys('foo')
+    })
+
+    it('should schedule new event', () => {
+      expect(scheduleJobSpy).to.have.been.calledWith(event.cron)
+    })
   })
 
   // describe.skip('.handleMessage', () => {

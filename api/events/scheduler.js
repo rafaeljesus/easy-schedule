@@ -28,15 +28,20 @@ const cancel = _id => {
 }
 
 const create = event => {
-  const cron = event.cron ?
-    event.cron :
-    new Date(event.when)
+  try {
+    const cron = event.cron ?
+      event.cron :
+      new Date(event.when)
 
-  const fn = handle.bind(null, event)
-  const job = scheduler.scheduleJob(cron, fn)
+    const fn = handle.bind(null, event)
+    const job = scheduler.scheduleJob(cron, fn)
 
-  runningJobs[event._id] = job
-  log.info('succesfully scheduled job', event)
+    runningJobs[event._id] = job
+    log.info('succesfully scheduled job', event)
+    return {ok: 1}
+  } catch(err) {
+    throw err
+  }
 }
 
 const update = (_id, event) => {

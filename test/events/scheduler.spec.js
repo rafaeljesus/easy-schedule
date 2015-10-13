@@ -12,9 +12,7 @@ describe('Events:SchedulerSpec', () => {
     scheduleJobSpy = sinon.spy(scheduler, 'scheduleJob')
   })
 
-  afterEach(() => {
-    scheduleJobSpy.restore()
-  })
+  afterEach(() => scheduleJobSpy.restore())
 
   describe('.start', () => {
 
@@ -28,9 +26,7 @@ describe('Events:SchedulerSpec', () => {
       yield Scheduler.start()
     })
 
-    afterEach(() => {
-      findAllStub.restore()
-    })
+    afterEach(() => findAllStub.restore())
 
     it('should find all events stored on db', () => {
       expect(findAllStub).to.have.been.called
@@ -86,28 +82,4 @@ describe('Events:SchedulerSpec', () => {
     })
   })
 
-  // describe.skip('._onEvent', () => {
-  //
-  //   let httpMock
-  //     , nock = require('nock')
-  //
-  //   before(() => {
-  //     httpMock = nock(message.body.url)
-  //       .get('/')
-  //       .reply(200)
-  //   })
-  //
-  //   after(nock.cleanAll)
-  //
-  //   afterEach(() => {
-  //     httpMock.done()
-  //   })
-  //
-  //   it('should send http request', done => {
-  //     let sch = scheduler(redis)
-  //     sch._onEvent(message.body)
-  //     setTimeout(done, 100)
-  //   })
-  // })
-  //
 })

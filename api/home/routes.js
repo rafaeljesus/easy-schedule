@@ -8,4 +8,4 @@ router.get('/', function* () {
   this.body = {message: 'Easy Schedule rest api working'}
 })
 
-module.exports = router
+export default router

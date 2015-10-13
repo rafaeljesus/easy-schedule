@@ -31,4 +31,4 @@ router.delete('/', function* () {
   }
 })
 
-module.exports = router
+export default router

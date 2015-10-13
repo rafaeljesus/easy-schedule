@@ -59,4 +59,4 @@ router.delete('/:id', function* () {
   }
 })
 
-module.exports = router
+export default router

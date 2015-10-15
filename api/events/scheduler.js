@@ -50,6 +50,7 @@ const create = event => {
 }
 
 const update = (_id, event) => {
+  event._id = _id
   cancel(_id)
   return create(event)
 }

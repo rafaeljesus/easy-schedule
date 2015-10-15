@@ -16,6 +16,7 @@ router.post('/', function* () {
   let event = this.request.body
 
   try {
+    // FIXME return event _id for Scheduler#create
     yield [
       Event.create(event),
       Scheduler.create(event)
@@ -31,10 +32,12 @@ router.put('/:id', function* () {
     , id = this.params.id
 
   try {
-    yield Event.update(id, event)
+    yield [
+      Event.update(id, event),
+      Scheduler.update(id, event)
+    ]
     this.body = {message: 'succesfully updated schedule job'}
   } catch(err) {
-    console.log(err)
     this.throw(500, err)
   }
 })
@@ -53,7 +56,11 @@ router.delete('/:id', function* () {
   const id = this.params.id
 
   try {
-    this.body = yield Event.remove(id)
+    yield [
+      Event.remove(id),
+      Scheduler.cancel(id)
+    ]
+    this.body = {message: 'succesfully updated schedule job'}
   } catch(err) {
     this.throw(500, err)
   }

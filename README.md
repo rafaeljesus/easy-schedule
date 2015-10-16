@@ -15,7 +15,7 @@ At the appropriate time, Easy Schedule calls back to your application at the pro
 - [koa](http://koajs.com) &mdash; API is a KOA app. It respond to requests RESTfully in JSON.
 - [Mongodb](https://www.mongodb.com/) &mdash; Mongodb as a data store.
 
-## API
+## REST API
 
 #### Users
 (POST /v1/users) create a user account

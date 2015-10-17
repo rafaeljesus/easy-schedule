@@ -10,7 +10,6 @@ describe('Events:SchedulerSpec', () => {
   beforeEach(() => {
     event = {_id: 'foo', cron: '* * * * *'}
     scheduleJobSpy = sinon.spy(scheduler, 'scheduleJob')
-    Scheduler.runningJobs = {}
   })
 
   afterEach(() => scheduleJobSpy.restore())
@@ -60,7 +59,7 @@ describe('Events:SchedulerSpec', () => {
     })
   })
 
-  describe.skip('.update', () => {
+  describe('.update', () => {
 
     beforeEach(function* () {
       yield Scheduler.create(event)
@@ -73,13 +72,14 @@ describe('Events:SchedulerSpec', () => {
     })
 
     it('should have one scheduled running jobs', () => {
-      // expect(Scheduler.runningJobs.length).to.have.length(1)
-      console.log(Scheduler.runningJobs)
-      expect(Scheduler.runningJobs).to.contain.any.keys('foo')
+      const running = Scheduler.getScheduledEvents()
+      const len = Object.keys(running).length
+      expect(len).to.equal(1)
+      expect(running).to.contain.any.keys('foo')
     })
   })
 
-  describe.skip('.cancel', () => {
+  describe('.cancel', () => {
 
     beforeEach(function* () {
       yield Scheduler.create(event)
@@ -87,8 +87,11 @@ describe('Events:SchedulerSpec', () => {
 
     it('should cancel a scheduled job', function* () {
       let res = yield Scheduler.cancel(event._id)
+      const running = Scheduler.getScheduledEvents()
+      const len = Object.keys(running).length
       expect(res.ok).to.eql(1)
-      expect(Scheduler.runningJobs[event._id]).to.not.exist
+      expect(running[event._id]).to.not.exist
+      expect(len).to.equal(0)
     })
   })
 

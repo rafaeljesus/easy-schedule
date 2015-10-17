@@ -12,51 +12,57 @@ const start = function* () {
     let res = yield Event.findAll()
     if (!res || res.length === 0) return
     if (isPlainObject(res)) {
-      return create(res)
+      return yield create(res)
     }
-    res.map(create)
+    return yield res.map(create)
   } catch(err) {
     log.error('scheduler failed to start', err)
   }
 }
 
-const cancel = _id => {
+const cancel = function* (_id) {
   try {
     let job = scheduledEvents[_id]
     if (!job) return
     job.cancel()
     delete scheduledEvents[_id]
-    return {ok: 1}
+    return yield {ok: 1}
   } catch(err) {
     throw err
   }
 }
 
-const create = event => {
+const create = function* (event) {
   try {
     const cron = event.cron ? event.cron : new Date(event.when)
-    const fn = handle.bind(null, event)
-    const job = scheduler.scheduleJob(cron, fn)
+      , fn = handle.bind(null, event)
+      , job = scheduler.scheduleJob(cron, fn)
+
     scheduledEvents[event._id] = job
     log.info('succesfully scheduled job', event)
-    return {ok: 1}
+    return yield {ok: 1}
   } catch(err) {
     throw err
   }
 }
 
-const update = (_id, event) => {
+const update = function* (_id, event) {
   event._id = _id
-  cancel(_id)
-  return create(event)
+  yield cancel(_id)
+  return yield create(event)
 }
 
 const getScheduledEvents = () => scheduledEvents
+
+const resetScheduledEvents = () => {
+  scheduledEvents = {}
+}
 
 export default {
   start,
   create,
   update,
   cancel,
-  getScheduledEvents
+  getScheduledEvents,
+  resetScheduledEvents
 }

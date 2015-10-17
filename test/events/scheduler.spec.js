@@ -12,9 +12,12 @@ describe('Events:SchedulerSpec', () => {
     scheduleJobSpy = sinon.spy(scheduler, 'scheduleJob')
   })
 
-  afterEach(() => scheduleJobSpy.restore())
+  afterEach(() => {
+    scheduleJobSpy.restore()
+    Scheduler.resetScheduledEvents()
+  })
 
-  describe.skip('.start', () => {
+  describe('.start', () => {
 
     let findAllStub
 

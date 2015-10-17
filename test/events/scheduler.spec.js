@@ -14,7 +14,7 @@ describe('Events:SchedulerSpec', () => {
 
   afterEach(() => scheduleJobSpy.restore())
 
-  describe('.start', () => {
+  describe.skip('.start', () => {
 
     let findAllStub
 
@@ -37,7 +37,7 @@ describe('Events:SchedulerSpec', () => {
     })
 
     it('should have scheduled two running jobs', () => {
-      expect(Scheduler.runningJobs).to.contain.any.keys('foo', 'bar')
+      expect(Scheduler.getScheduledEvents()).to.contain.any.keys('foo', 'bar')
     })
   })
 
@@ -47,8 +47,11 @@ describe('Events:SchedulerSpec', () => {
       yield Scheduler.create(event)
     })
 
-    it('should have scheduled running jobs', () => {
-      expect(Scheduler.runningJobs).to.contain.any.keys('foo')
+    it('should have one scheduled running jobs', () => {
+      const running = Scheduler.getScheduledEvents()
+      const len = Object.keys(running).length
+      expect(len).to.equal(1)
+      expect(running).to.contain.any.keys('foo')
     })
 
     it('should schedule new event', () => {
@@ -67,6 +70,13 @@ describe('Events:SchedulerSpec', () => {
       yield Scheduler.update(event._id, event)
       expect(scheduleJobSpy).to.have.been.calledWith(event.cron)
     })
+
+    it('should have one scheduled running jobs', () => {
+      const running = Scheduler.getScheduledEvents()
+      const len = Object.keys(running).length
+      expect(len).to.equal(1)
+      expect(running).to.contain.any.keys('foo')
+    })
   })
 
   describe('.cancel', () => {
@@ -77,8 +87,11 @@ describe('Events:SchedulerSpec', () => {
 
     it('should cancel a scheduled job', function* () {
       let res = yield Scheduler.cancel(event._id)
+      const running = Scheduler.getScheduledEvents()
+      const len = Object.keys(running).length
       expect(res.ok).to.eql(1)
-      expect(Scheduler.runningJobs[event._id]).to.not.exist
+      expect(running[event._id]).to.not.exist
+      expect(len).to.equal(0)
     })
   })
 

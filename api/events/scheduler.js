@@ -5,7 +5,7 @@ import log from '../../lib/log'
 import utils from '../../lib/utils'
 
 const isPlainObject = utils.isPlainObject
-  , runningJobs = {}
+let scheduledEvents = {}
 
 const start = function* () {
   try {
@@ -22,10 +22,10 @@ const start = function* () {
 
 const cancel = _id => {
   try {
-    let job = runningJobs[_id]
+    let job = scheduledEvents[_id]
     if (!job) return
     job.cancel()
-    delete runningJobs[_id]
+    delete scheduledEvents[_id]
     return {ok: 1}
   } catch(err) {
     throw err
@@ -34,14 +34,10 @@ const cancel = _id => {
 
 const create = event => {
   try {
-    const cron = event.cron ?
-      event.cron :
-      new Date(event.when)
-
+    const cron = event.cron ? event.cron : new Date(event.when)
     const fn = handle.bind(null, event)
     const job = scheduler.scheduleJob(cron, fn)
-
-    runningJobs[event._id] = job
+    scheduledEvents[event._id] = job
     log.info('succesfully scheduled job', event)
     return {ok: 1}
   } catch(err) {
@@ -55,10 +51,12 @@ const update = (_id, event) => {
   return create(event)
 }
 
+const getScheduledEvents = () => scheduledEvents
+
 export default {
   start,
   create,
   update,
   cancel,
-  runningJobs
+  getScheduledEvents
 }

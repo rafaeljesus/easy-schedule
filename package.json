@@ -3,13 +3,26 @@
   "version": "1.0.1",
   "description": "Simple and flexible job scheduling for your application",
   "scripts": {
-    "start": "babel-node bin/easy.schedule",
+    "start": "npm run apidoc && babel-node bin/easy.schedule",
     "lint": "eslint .",
     "babel-node": "babel-node --stage 0",
     "test": "npm run lint && NODE=test ./node_modules/mocha/bin/_mocha --recursive -- test",
-    "watch:server": "nodemon --exec npm run babel-node -- bin/easy.schedule.js"
+    "watch:server": "nodemon --exec npm run babel-node -- bin/easy.schedule.js",
+    "apidoc": "apidoc -i api/ -o public/apidoc/"
+  },
+  "keywords": [
+    "Schedule",
+    "Scheduler",
+    "Job",
+    "Jobs"
+  ],
+  "author": "Rafael Jesus <rafaelljesus86@gmail.com>",
+  "license": "MIT",
+  "apidoc": {
+    "name": "REST Api Docs - Easy Scheduler API"
   },
   "dependencies": {
+    "apidoc": "^0.13.1",
     "babel": "^5.8.23",
     "bunyan": "^1.4.0",
     "co": "^4.6.0",
@@ -39,13 +52,5 @@
     "sinon": "^1.15.4",
     "sinon-chai": "^2.8.0",
     "supertest": "*"
-  },
-  "keywords": [
-    "Schedule",
-    "Scheduler",
-    "Job",
-    "Jobs"
-  ],
-  "author": "Rafael Jesus <rafaelljesus86@gmail.com>",
-  "license": "ISC"
+  }
 }

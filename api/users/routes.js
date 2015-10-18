@@ -17,6 +17,15 @@ router.post('/', function* () {
   }
 })
 
+/**
+ * @api {delete} /v1/users Exclude a user
+ * @apiGroup Users
+ * @apiHeader {String} Basic Authorization
+ * @apiSuccessExample {json} Success
+ *    HTTP/1.1 200 User was successfully deleted
+ * @apiErrorExample {json} Error
+ *    HTTP/1.1 422 Precondition Failed
+ */
 router.delete('/', function* () {
   let name = this.user.name
     , password = this.user.password
@@ -27,7 +36,7 @@ router.delete('/', function* () {
     this.type = 'json'
     this.body = {message: 'User was successfully deleted'}
   } catch(err) {
-    this.throw(500, err)
+    this.throw(422, err)
   }
 })
 

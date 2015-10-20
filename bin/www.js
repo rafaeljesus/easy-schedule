@@ -1,28 +1,10 @@
 import http from 'http'
-import cluster from 'cluster'
-import os from 'os'
-import co from 'co'
-import Scheduler from '../api/events/scheduler'
 
-const numCPUs = os.cpus().length
+const app = require('../app')
+  , port  = process.env.PORT || 3000
 
-if (cluster.isMaster) {
+http.createServer(app.callback())
 
-  co(function* () {
-    yield Scheduler.start()
-    for (let i = 0; i < numCPUs; ++i) {
-      cluster.fork()
-    }
-  })
-}
-
-if (cluster.isWorker) {
-  const app = require('../app')
-    , port  = process.env.PORT || 3000
-
-  http.createServer(app.callback())
-
-  if (!module.parent) {
-    app.listen(port)
-  }
+if (!module.parent) {
+  app.listen(port)
 }

@@ -3,11 +3,11 @@
   "version": "1.0.1",
   "description": "Simple and flexible job scheduling for your application",
   "scripts": {
-    "start": "npm run apidoc && babel-node bin/easy.schedule",
-    "lint": "eslint .",
-    "babel-node": "babel-node --stage 0",
+    "start": "npm run apidoc && npm run clusters",
+    "clusters": "babel-node clusters.js",
     "test": "npm run lint && NODE=test ./node_modules/mocha/bin/_mocha --recursive -- test",
     "watch:server": "nodemon --exec npm run babel-node -- bin/www.js",
+    "lint": "eslint .",
     "apidoc": "apidoc -i api/ -o public/apidoc/"
   },
   "keywords": [

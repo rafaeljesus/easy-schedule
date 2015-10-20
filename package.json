@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "babel-node": "babel-node --stage 0",
     "test": "npm run lint && NODE=test ./node_modules/mocha/bin/_mocha --recursive -- test",
-    "watch:server": "nodemon --exec npm run babel-node -- bin/easy.schedule.js",
+    "watch:server": "nodemon --exec npm run babel-node -- bin/www.js",
     "apidoc": "apidoc -i api/ -o public/apidoc/"
   },
   "keywords": [

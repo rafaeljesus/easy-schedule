@@ -14,7 +14,6 @@ if (cluster.isMaster) {
       cluster.fork()
     }
   })
-
 }
 
 if (cluster.isWorker) {

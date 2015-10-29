@@ -43,6 +43,9 @@ At the appropriate time, Easy Schedule calls back to your application at the pro
 - Push to the branch (`git push origin my-new-feature`)
 - Create new Pull Request
 
+## Front-end project
+- [easy-schedule-ui](https://github.com/fabiohbarbosa/easy-schedule-ui/)
+
 ## Maintaners
 
 * [Rafael Jesus](https://github.com/rafaeljesus)

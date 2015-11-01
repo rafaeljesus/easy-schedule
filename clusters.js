@@ -14,15 +14,15 @@ if (cluster.isMaster) {
   CPUS.map(() => cluster.fork())
 
   cluster.on('listening', worker => {
-    log.info('Cluster %d conected', worker.process.pid)
+    log.info('cluster %d conected', worker.process.pid)
   })
 
   cluster.on('disconnect', worker => {
-    log.info('Cluster %d disconected', worker.process.pid)
+    log.info('cluster %d disconected', worker.process.pid)
   })
 
   cluster.on('exit', worker => {
-    log.info('Cluster %d exited', worker.process.pid)
+    log.info('cluster %d exited', worker.process.pid)
     cluster.fork()
   })
 }

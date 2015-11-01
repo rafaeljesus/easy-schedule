@@ -2,7 +2,7 @@ import cluster from 'cluster'
 import os from 'os'
 import co from 'co'
 import Scheduler from './api/events/scheduler'
-import log from './lib/log'
+import log from './libs/log'
 
 const CPUS = os.cpus()
 
@@ -28,5 +28,5 @@ if (cluster.isMaster) {
 }
 
 if (cluster.isWorker) {
-  require('./bin/www')
+  require('./bin/boot')
 }

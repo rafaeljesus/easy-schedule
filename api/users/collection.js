@@ -1,6 +1,6 @@
-import mongo from '../../lib/mongo'
+import db from '../../libs/db'
 
-const users = mongo('users')
+const users = db('users')
 
 const create = function* (name, password) {
   return yield users.insert({

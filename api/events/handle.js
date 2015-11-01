@@ -1,7 +1,7 @@
 import co from 'co'
 import request from 'co-request'
 import History from '../history/collection'
-import log from '../../lib/log'
+import log from '../../libs/log'
 
 const fn = event => {
   return co(function* () {

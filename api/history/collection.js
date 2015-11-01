@@ -1,6 +1,6 @@
-import mongo from '../../lib/mongo'
+import db from '../../libs/db'
 
-const history = mongo('history')
+const history = db('history')
 
 const findByUser = function* (user) {
   return yield history.find({

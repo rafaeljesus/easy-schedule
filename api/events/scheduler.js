@@ -1,8 +1,8 @@
 import scheduler from 'node-schedule'
 import handle from './handle'
 import Event from '../events/collection'
-import log from '../../lib/log'
-import utils from '../../lib/utils'
+import log from '../../libs/log'
+import utils from '../../libs/utils'
 
 const isPlainObject = utils.isPlainObject
 let scheduledEvents = {}

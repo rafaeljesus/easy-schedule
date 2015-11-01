@@ -1,6 +1,6 @@
-import koaRouter from 'koa-router'
+import krouter from 'koa-router'
 
-const router = koaRouter()
+const router = krouter()
 
 /**
  * @api {get} / API Status
@@ -12,10 +12,11 @@ const router = koaRouter()
  *      "status": "Easy Schedule API"
  *    }
  */
-router.get('/', function* () {
-  this.type = 'json'
-  this.status = 200
-  this.body = {status: 'Easy Schedule API'}
-})
+router.
+  get('/', function* () {
+    this.type = 'json'
+    this.status = 200
+    this.body = {status: 'Easy Schedule API'}
+  })
 
 export default router

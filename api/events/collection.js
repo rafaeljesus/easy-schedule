@@ -1,7 +1,6 @@
-import mongo from '../../lib/mongo'
-import C from '../../lib/constants'
+import db from '../../libs/db'
 
-const events = mongo('events')
+const events = db('events')
 
 const findAll = function* () {
   return yield events.find({})
@@ -18,7 +17,7 @@ const findById = function* (id) {
 }
 
 const create = function* (data) {
-  data.status = C.ACTIVE
+  data.status = 'ACTIVE'
   return yield events.insert(data)
 }
 

@@ -4,7 +4,7 @@ import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 import coMocha from 'co-mocha'
 import chai from 'chai'
-import app from '../app'
+import app from '../index'
 
 global.app = app
 global.sinon = sinon

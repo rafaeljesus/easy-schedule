@@ -1,12 +1,14 @@
 import koa from 'koa'
 import mount from 'koa-mount'
+import serve from 'koa-static'
 import koaBody from 'koa-body'
 import logger from 'koa-logger'
 import compress from 'koa-compress'
 import limit from 'koa-better-ratelimit'
+import helmet from 'koa-helmet'
 import cors from 'kcors'
 import zlib from 'zlib'
-import auth from './middlewares/auth'
+// import auth from './libs/auth'
 import APIhome from './api/home/routes'
 import APIusers from './api/users/routes'
 import APIevents from './api/events/routes'
@@ -14,39 +16,28 @@ import APIhistory from './api/history/routes'
 
 const app = koa()
 
-const compressOpts = {
+app.use(compress({
   filter: contentType => /text/i.test(contentType)
   , threshold: 2048
   , flush: zlib.Z_SYNC_FLUSH
-}
-
-const limitOpts = {
+}))
+app.use(limit({
   duration: 1000 * 60 * 3
   , max: 10
   , blacklist: []
-}
-
-const handleErr = function* (next) {
-  try {
-    yield next
-  } catch(err) {
-    this.type = 'json'
-    this.status = err.status || 500
-    this.body = {error: 'A unexpected error ocurred'}
-    this.app.emit('error', err, this)
-  }
-}
-
-app.use(compress(compressOpts))
-app.use(limit(limitOpts))
+}))
 app.use(koaBody())
 app.use(logger())
-app.use(cors())
-app.use(auth())
+app.use(helmet())
+app.use(cors({
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
+// app.use(auth.initialize())
 app.use(mount('/v1', APIhome.middleware()))
 app.use(mount('/v1/users', APIusers.middleware()))
 app.use(mount('/v1/events', APIevents.middleware()))
 app.use(mount('/v1/history', APIhistory.middleware()))
-app.use(handleErr)
+app.use(serve('public'))
 
 module.exports = app

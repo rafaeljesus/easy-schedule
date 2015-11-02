@@ -2,14 +2,16 @@ import User from '../../api/users/collection'
 
 describe('User:CollectionSpec', () => {
 
-  let name = 'rafaeljesus'
-    , password = 'mypassword'
+  let fixture = {
+    email: 'foo@gmail.com',
+    password: '123456'
+  }
 
   afterEach(function* () {
     try {
       yield User.cleardb()
     } catch(err) {
-      expect(err).to.not.be.ok
+      expect(err).to.not.exist
     }
   })
 
@@ -17,52 +19,36 @@ describe('User:CollectionSpec', () => {
 
     it('should create a new user', function* () {
       try {
-        let res = yield User.create(name, password)
+        let res = yield User.create(fixture)
         expect(res._id).to.exist
       } catch(err) {
-        expect(err).to.not.be.ok
+        expect(err).to.not.exist
       }
     })
   })
 
-  describe('.auth', () => {
+  describe('.findByEmail', () => {
 
     before(function* () {
       try {
-        yield User.create(name, password)
+        yield User.create(fixture)
       } catch(err) {
-        expect(err).to.not.be.ok
+        expect(err).to.not.exist
       }
     })
 
-    it('should auth a user', function* () {
+    it('should find user by email', function* () {
       try {
-        let user = yield User.auth(name, password)
+        let user = yield User.findByEmail(fixture.email)
         expect(user).to.exist
       } catch(err) {
-        expect(err).to.not.be.ok
+        expect(err).to.not.exist
       }
     })
   })
 
-  describe('.delete', () => {
+  describe.skip('.isPassword', () => {
 
-    before(function* () {
-      try {
-        yield User.create(name, password)
-      } catch(err) {
-        expect(err).to.not.be.ok
-      }
-    })
-
-    it('should delete a user', function* () {
-      try {
-        let res = yield User.remove(name, password)
-        expect(res).to.be.equal(1)
-      } catch(err) {
-        expect(err).to.not.be.ok
-      }
-    })
   })
 
 })

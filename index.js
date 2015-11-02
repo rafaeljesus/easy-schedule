@@ -1,7 +1,7 @@
 import koa from 'koa'
 import mount from 'koa-mount'
 import serve from 'koa-static'
-import koaBody from 'koa-body'
+import koaBody from 'koa-bodyparser'
 import logger from 'koa-logger'
 import compress from 'koa-compress'
 import limit from 'koa-better-ratelimit'
@@ -10,6 +10,7 @@ import cors from 'kcors'
 import zlib from 'zlib'
 // import auth from './libs/auth'
 import APIhome from './api/home/routes'
+import APItoken from './api/token/routes'
 import APIusers from './api/users/routes'
 import APIevents from './api/events/routes'
 import APIhistory from './api/history/routes'
@@ -35,6 +36,7 @@ app.use(cors({
 }))
 // app.use(auth.initialize())
 app.use(mount('/v1', APIhome.middleware()))
+app.use(mount('/v1/token', APItoken.middleware()))
 app.use(mount('/v1/users', APIusers.middleware()))
 app.use(mount('/v1/events', APIevents.middleware()))
 app.use(mount('/v1/history', APIhistory.middleware()))

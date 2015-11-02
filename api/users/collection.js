@@ -1,27 +1,23 @@
+import bcrypt from 'bcrypt'
 import db from '../../libs/db'
 
 const users = db('users')
 
-const create = function* (name, password) {
-  return yield users.insert({
-    name: name,
-    password: password,
-    createdAt: new Date()
-  })
-}
-
-const auth = function* (name, password) {
+const findByEmail = function* (email) {
   return yield users.find({
-    name: name,
-    password: password
+    email: email
   })
 }
 
-const remove = function* (name, password) {
-  return yield users.remove({
-    name: name,
-    password: password
-  })
+const isPassword = (encodedPassword, password) => {
+  return bcrypt.compareSync(encodedPassword, password)
+}
+
+const create = function* (user) {
+  const salt = bcrypt.genSaltSync()
+  user.password = bcrypt.hashSync(user.password, salt)
+  user.createdAt = new Date()
+  return yield users.insert(user)
 }
 
 const cleardb = function* () {
@@ -30,7 +26,7 @@ const cleardb = function* () {
 
 export default {
   create,
-  auth,
-  remove,
+  findByEmail,
+  isPassword,
   cleardb
 }

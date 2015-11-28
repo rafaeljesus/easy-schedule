@@ -2,46 +2,32 @@ import db from '../../libs/db'
 
 const events = db('events')
 
-const findAll = function* () {
+export function *findAll() {
   return yield events.find({})
 }
 
-const findByUser = function* (user) {
+export function *findByUser(user) {
   return yield events.find({
     'user.name': user.name
   })
 }
 
-const findById = function* (id) {
+export function *findById(id) {
   return yield events.findById(id)
 }
 
-const create = function* (data) {
+export function *create(data) {
   data.status = 'ACTIVE'
   return yield events.insert(data)
 }
 
-const update = function* (id, data) {
+export function *update(id, data) {
   const options = {new: true}
     , query = {_id: id}
     , mod = {$set: data}
   return yield events.findAndModify(query, mod, options)
 }
 
-const remove = function* (id) {
+export function *remove(id) {
   return yield events.remove({_id: id})
-}
-
-const cleardb = function* () {
-  return yield events.remove()
-}
-
-export default {
-  findAll,
-  findByUser,
-  findById,
-  create,
-  update,
-  remove,
-  cleardb
 }

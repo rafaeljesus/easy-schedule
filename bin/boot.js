@@ -4,6 +4,7 @@ import log from '../libs/log'
 
 const port  = process.env.PORT || 3000
 
+http.globalAgent.maxSockets = Infinity
 http.createServer(app.callback())
 app.listen(port)
 log.info(`Easy Schedule API - port ${port}`)

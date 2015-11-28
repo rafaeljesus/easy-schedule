@@ -1,36 +1,39 @@
-import User from '../../api/users/collection'
+import jwt from 'jwt-simple'
+import * as User from '../../api/users/collection'
+import cfg from '../../libs/config'
+import db from '../../libs/db'
 
 describe('User:RoutesSpec', () => {
 
-  let name = 'user-login'
-    , password = 'user-password'
-
-  afterEach(function* () {
-    try {
-      yield User.cleardb()
-    } catch(err) {
-      expect(err).to.not.be.ok
-    }
+  afterEach(function *() {
+    yield db('users').remove()
   })
 
   describe('POST /v1/users', () => {
     it('should create a user', done => {
       request.
         post('/v1/users').
-        set('Accept', 'application/json').
-        set('Accept-Encoding', 'gzip').
-        send({name: name, password: password}).
+        // set('Accept', 'application/json').
+        // set('Accept-Encoding', 'gzip').
+        send({email: 'rafael@gmail.com', password: '123456'}).
         expect('Content-Type', /json/).
-        expect(201, done)
+        expect(201).
+        end((err, res) => {
+          expect(res.body._id).to.exist
+        })
     })
   })
 
   describe('DELETE /v1/users', () => {
 
-    before(function* () {
+    let token
+      , body = {email: 'rafael@gmail.com', password: '123456'}
+
+    beforeEach(function *() {
       try {
-        yield User.create(name, password)
-      } catch(err) {
+        let res = yield User.create(body)
+        token = jwt.encode({_id: res._id}, cfg.jwt.secret)
+      } catch (err) {
         expect(err).to.not.exist
       }
     })
@@ -38,11 +41,10 @@ describe('User:RoutesSpec', () => {
     it('should delete a user', done => {
       request.
         delete('/v1/users').
-        auth(name, password).
         set('Accept', 'application/json').
+        set('Authorization', `JWT ${token}`).
         set('Accept-Encoding', 'gzip').
-        expect('Content-Type', /json/).
-        expect(200, done)
+        expect(204, done)
     })
   })
 

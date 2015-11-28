@@ -1,34 +1,42 @@
+import co from 'co'
 import passport from 'passport'
 import {Strategy} from 'passport-jwt'
-import Users from '../api/users/collection'
+import User from '../api/users/collection'
 import cfg from './config'
 
 const options = {secretOrKey: cfg.jwt.secret}
 
 module.exports = (() => {
 
-  const strategy = Strategy(options, (payload, done) => {
-    Users.findById(payload.id).
-      then(user => {
-        if (user) {
-          return done(null, {
-            id: user.id,
-            email: user.email
-          })
-        }
-        done(null, false)
-      }).
-      catch(error => done(error, null))
+  const strategy = new Strategy(options, (payload, done) => {
+    return co(function *() {
+      try {
+        console.log('on strategy')
+        let user = yield User.findById(payload._id)
+        if (!user) return done(null, false)
+        return done(null, user)
+      } catch (err) {
+        console.log('failed to authenticate user', err)
+        done(err, null)
+      }
+    })
   })
 
   passport.use(strategy)
 
   return {
     initialize: () => {
-      return passport.initialize()
+      return function *() {
+        return passport.initialize()
+      }
     },
+
     authenticate: () => {
-      return passport.authenticate('jwt', cfg.jwt.session)
+      return function *() {
+        console.log('authenticate')
+        return passport.authenticate('jwt', cfg.jwt.session)
+      }
     }
   }
+
 })()
